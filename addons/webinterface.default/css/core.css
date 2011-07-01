@@ -358,7 +358,9 @@ div.imgWrapper div.inner {
 	z-index: 3500;
 	cursor: pointer;
 	opacity: 0.8;
+	width:100px;
 	}
+
 
 .playIcon:hover {
 	opacity: 1;
@@ -623,7 +625,11 @@ div.imgWrapper div.inner {
 	clear: both;
 	float: left;
 	}
-
+	
+.tvshowContainer .activeSeason{
+	font-weight:bold;	
+	}
+	
 .tvshowContainer .episodeListingsContainer {
 	position: absolute;
 	top: 0px;

@@ -381,9 +381,9 @@ MediaLibrary.prototype = {
 				movieDetails.append($('<p>').addClass('director').html('<strong>Directed By:</strong> ' + event.data.movie.director));
 			}
 			this.activeCover = movieDetails;
-			$('body').append(movieDetails);			                        
-                        $('#overlay').show();			
-                        this.updatePlayButtonLocation();
+			$('body').append(movieDetails);
+			                        this.updatePlayButtonLocation();
+$('#overlay').show();                        this.updatePlayButtonLocation();
 		},
 		playTrack: function(event) {
 			jQuery.post(JSON_RPC + '?ClearPlaylist', '{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}', jQuery.proxy(function(data) {
