@@ -39,7 +39,7 @@ NowPlayingManager.prototype = {
 				type: 'POST', 
 				url: JSON_RPC + '?UpdateState', 
 				data: '{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}', 
-				timeout: 2000,
+				timeout: 3000,
 				success: jQuery.proxy(function(data) {
 					if (data && data.result) {
 						if (data.result.audio && this.activePlayer != 'Audio') {
@@ -52,8 +52,10 @@ NowPlayingManager.prototype = {
 							this.activePlayer = 'Video';
 							this.stopAudioPlaylistUpdate();
 							this.displayVideoNowPlaying();
-							this.showFooter();
+							this.showFooter();							
 							this.stopRefreshTime();
+						} else if (data.result.video || data.result.audio) {
+							this.showFooter();							
 						} else if (!data.result.audio && !data.result.video) {
 							this.stopRefreshTime();
 							this.hideFooter();
@@ -341,7 +343,7 @@ NowPlayingManager.prototype = {
 		refreshVideoData: function() {
 			if (this.autoRefreshVideoData && !this.videoRefreshTimer) {
 				this.videoRefreshTimer = 1;
-				setTimeout(jQuery.proxy(this.refreshVideoDataLoop, this), 1000);
+				setTimeout(jQuery.proxy(this.refreshVideoDataLoop, this), 1500);
 			}
 			if (this.playing && !this.paused) {
 				this.trackBaseTime++;
