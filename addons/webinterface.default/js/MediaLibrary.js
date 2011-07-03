@@ -27,7 +27,7 @@ var MediaLibrary = function() {
 MediaLibrary.prototype = {
 		
 		init: function() {
-			this.bindControls();			
+			this.bindControls();		
 		},
 		
 		bindControls: function() {

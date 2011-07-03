@@ -91,23 +91,27 @@ body {
 	width: 379px;
 	height: 70px;
 	}
+	
 .floatableTVShowCoverSeason {	
 	width: 500px;
 	height: 70px;
 	margin-top: 30px;
-	}	
+	}
+		
 .toggle .activeMode {
 	font-weight:700;
 	}
+	
 #tvshowLibraryContainer {
 	padding-top:25px;	
-}	
+	}
+		
 #libraryContainer .floatableAlbum,
 #movieLibraryContainer .floatableMovieCover,
 #tvshowLibraryContainer .floatableTVShowCover {
 	cursor: pointer;
 	}
-
+	
 .floatableAlbum div.imgWrapper,
 .floatableMovieCover div.imgWrapper,
 .floatableTVShowCover div.imgWrapper {
@@ -118,12 +122,14 @@ body {
 	text-align: center;
 	overflow: hidden;
 	}
+	
 .floatableTVShowCoverSeason div.imgWrapper {
 	margin: auto;
 	height: 70px;
 	width: 379px;
 	display:block;	
 	}
+	
 div.imgWrapper div.inner {
 	overflow: hidden;
 	width: 130px;
