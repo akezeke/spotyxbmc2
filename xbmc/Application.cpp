@@ -4679,6 +4679,7 @@ void CApplication::Process()
     ProcessSlow();
   }
 
+  g_cpuInfo.getUsedPercentage(); // must call it to recalculate pct values
 }
 
 // We get called every 500ms
