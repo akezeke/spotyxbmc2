@@ -251,31 +251,45 @@ MediaLibrary.prototype = {
 		},
 		
 		togglePosterView: function(event){
-			if(event.data.poster){
-				setCookie('TVPosterView','true');
-				$(".floatableTVShowCover, .floatableTVShowCover div.imgWrapper, .floatableTVShowCover img, .floatableTVShowCover div.imgWrapper div.inner").css('width','135px').css('height','199px');
-				$(".floatableTVShowCoverSeason div.imgWrapper, .floatableTVShowCoverSeason div.imgWrapper div.inner,.floatableTVShowCoverSeason img").css('height','559px');
-				$(".floatableTVShowCoverSeason").css('height','559px');
-				$("#togglePoster").addClass('activeMode');
-				$("#toggleBanner").removeClass('activeMode');
+			var view=event.data.mode;
+			var wthumblist,hthumblist,hthumbdetails;
+			$("#toggleBanner").removeClass('activeMode');
+			$("#togglePoster").removeClass('activeMode');
+			$("#toggleLandscape").removeClass('activeMode');
+			switch(view) {
+				case 'poster':
+					setCookie('TVView','poster');
+					wthumblist='135px';
+					hthumblist='199px';
+					hthumbdetails='559px';
+					$("#togglePoster").addClass('activeMode');
+					break;
+				case 'landscape':
+					setCookie('TVView','landscape');
+					wthumblist='210px';
+					hthumblist='118px';
+					hthumbdetails='213px';
+					$("#toggleLandscape").addClass('activeMode');
+					break;
+				default: //set banner view as default
+					setCookie('TVView','banner');
+					wthumblist='379px';
+					hthumblist='70px';
+					hthumbdetails='70px';
+					$("#toggleBanner").addClass('activeMode');
+					break;
 			}
-			else {
-				setCookie('TVPosterView','false');
-				$(".floatableTVShowCover, .floatableTVShowCover div.imgWrapper, .floatableTVShowCover img, .floatableTVShowCover div.imgWrapper div.inner").css('width','379px').css('height','70px');
-				$(".floatableTVShowCoverSeason div.imgWrapper, .floatableTVShowCoverSeason div.imgWrapper div.inner,.floatableTVShowCoverSeason img").css('height','70px');
-				$(".floatableTVShowCoverSeason").css('height','70px');
-				$("#toggleBanner").addClass('activeMode');
-				$("#togglePoster").removeClass('activeMode');
-			}
-			
+			$(".floatableTVShowCover, .floatableTVShowCover div.imgWrapper, .floatableTVShowCover img, .floatableTVShowCover div.imgWrapper div.inner").css('width',wthumblist).css('height',hthumblist);
+			$(".floatableTVShowCoverSeason div.imgWrapper, .floatableTVShowCoverSeason div.imgWrapper div.inner,.floatableTVShowCoverSeason img, .floatableTVShowCoverSeason").css('height',hthumbdetails);			
 		},
+		
 		displayTVShowDetails: function(event) {
 			var tvshowDetailsContainer = $('#tvShowDetails' + event.data.tvshow.tvshowid);
 			$('#topScrollFade').hide();
 			toggle=this.toggle.detach();	
 			if (!tvshowDetailsContainer || tvshowDetailsContainer.length == 0) {
 				$('#spinner').show();
-				jQuery.post(JSON_RPC + '?GetTVShowSeasons', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": { "fields": [ "season", "showtitle", "playcount", "episode", "thumbnail" ], "tvshowid" : ' + event.data.tvshow.tvshowid + ' }, "id": 1}', jQuery.proxy(function(data) {
+				jQuery.post(JSON_RPC + '?GetTVShowSeasons', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": { "fields": [ "season", "showtitle", "playcount", "episode", "thumbnail","fanart" ], "tvshowid" : ' + event.data.tvshow.tvshowid + ' }, "id": 1}', jQuery.proxy(function(data) {
 					tvshowDetailsContainer = $('<div>');
 					tvshowDetailsContainer.attr('id', 'tvShowDetails' + event.data.tvshow.tvshowid)
 										  .css('display', 'none')
@@ -289,13 +303,21 @@ MediaLibrary.prototype = {
 						var seasonSelectionSelect = $('<select>').addClass('seasonPicker');
 						//var episodeCount = 0;
 						this.tvActiveShowContainer = tvshowDetailsContainer;
+						//var fanart;
 						$.each($(data.result.seasons), jQuery.proxy(function(i, item) {
-							//episodeCount += item.episode;
+//							if(fanart==null && item.fanart!=null){
+//								fanart=item.fanart;
+//							}
+//							//episodeCount += item.episode;
 							var season = $('<option>').attr('value',i);
 							season.text(item.label);
 							seasonSelectionSelect.append(season);
 							
 						}, this));
+//						if(fanart!=null)
+//						{
+//							$('.contentContainer').css('background','url("'+this.getThumbnailPath(fanart)+'")').css('background-size','cover');	
+//						}
 						seasonSelectionSelect.bind('change', {tvshow: event.data.tvshow.tvshowid, seasons: data.result.seasons, element: seasonSelectionSelect}, jQuery.proxy(this.displaySeasonListings, this));
 						//showDetails.append($('<p>').html('<span class="heading">Episodes:</span> ' + episodeCount));
 						showDetails.append(seasonSelectionSelect);
@@ -303,9 +325,17 @@ MediaLibrary.prototype = {
 						tvshowDetailsContainer.append(showThumb);
 						seasonSelectionSelect.trigger('change');
 						$('#content').append(tvshowDetailsContainer);
-						if(getCookie('TVPosterView')!=null && getCookie('TVPosterView')=='true'){
-							togglePoster.trigger('click');
+						if(getCookie('TVView')!=null && getCookie('TVView')!='banner'){
+						var view=getCookie('TVView');
+						switch(view) {
+							case 'poster':
+								togglePoster.trigger('click');
+								break;
+							case 'landscape':
+								toggleLandscape.trigger('click')
+								break;						
 						}
+					}
 						tvshowDetailsContainer.fadeIn();
 					}
 					$('#spinner').hide();
@@ -328,7 +358,7 @@ MediaLibrary.prototype = {
 			//Populate new listings
 			jQuery.post(JSON_RPC + '?GetTVSeasonEpisodes', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "fields": [ "title", "thumbnail","episode"], "season" : ' + seasons[selectedVal].season + ', "tvshowid" : ' + event.data.tvshow + ' }, "id": 1}', jQuery.proxy(function(data) {
 				var episodeListingsContainer = $('<div>').addClass('episodeListingsContainer');
-				var episodeTable= $('<table>').addClass('seasonView').html('<thead><tr class="headerRow"><th class="thumbHeader">N&deg;</th><th>Title</th><th class="thumbHeader">Thumb</th></tr></thead><tbody class="resultSet"></tbody>');				
+				var episodeTable= $('<table>').addClass('seasonView').html('<thead><tr class="headerRow"><th class="thumbHeader">N&deg;</th><th>Title</th><th class="thumbHeader">Thumb</th><th class="thumbHeader">Details</th></tr></thead><tbody class="resultSet"></tbody>');	
 				$.each($(data.result.episodes), jQuery.proxy(function(i, item) {
 					var episodeRow = $('<tr>').addClass('episodeRow').addClass('tr' + i % 2).bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this));;
 					var episodePictureImg = $('<img>').bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this)).css('cursor','pointer');
@@ -336,6 +366,7 @@ MediaLibrary.prototype = {
 					var episodePicture=$('<td>').addClass('episodeThumb').append(episodePictureImg);
 					var episodeNumber = $('<td>').addClass('episodeNumber').html(item.episode);
 					var episodeTitle = $('<td>').html(item.title);
+					var episodeDetails = $('<td>').html('info').bind('click',{episodeid:item.episode});
 					episodeRow.append(episodeNumber).append(episodeTitle).append(episodePicture);
 					episodeTable.append(episodeRow);
 				}, this));
@@ -343,15 +374,6 @@ MediaLibrary.prototype = {
 				$(this.tvActiveShowContainer).append(episodeListingsContainer);
 			}, this), 'json');
 			
-		},
-		playTVShow: function(event) {
-			jQuery.post(JSON_RPC + '?ClearPlaylist', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Clear", "id": 1}', jQuery.proxy(function(data) {
-				//check that clear worked.
-				jQuery.post(JSON_RPC + '?AddTvShowToPlaylist', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Add", "params": { "item": { "episodeid": ' + event.data.episode.episodeid + ' } }, "id": 1}', jQuery.proxy(function(data) {
-					//play specific song in playlist
-					jQuery.post(JSON_RPC + '?PlaylistItemPlay', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Play", "params": { "item": 0 }, "id": 1}', function() {}, 'json');
-				}, this), 'json');
-			}, this), 'json');
 		},
 		playTVShow: function(event) {
 			jQuery.post(JSON_RPC + '?ClearPlaylist', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Clear", "id": 1}', jQuery.proxy(function(data) {
@@ -470,13 +492,17 @@ $('#overlay').show();                        this.updatePlayButtonLocation();
 				togglePoster= $('<span>Poster</span>');
 				togglePoster.attr('id', 'togglePoster')
 							.css('cursor','pointer')
-							.bind('click',{poster: true},jQuery.proxy(this.togglePosterView,this));
+							.bind('click',{mode: 'poster'},jQuery.proxy(this.togglePosterView,this));
 				toggleBanner= $('<span>Banner</span>');
 				toggleBanner.attr('id', 'toggleBanner')
 							.css('cursor','pointer')
 							.addClass('activeMode')
-							.bind('click',{poster: false},jQuery.proxy(this.togglePosterView,this));
-				toggle.append(toggleBanner).append(' | ').append(togglePoster);
+							.bind('click',{mode: 'banner'},jQuery.proxy(this.togglePosterView,this));
+				toggleLandscape= $('<span>Landscape</span>');
+				toggleLandscape.attr('id', 'toggleLandscape')
+							.css('cursor','pointer')
+							.bind('click',{mode: 'landscape'},jQuery.proxy(this.togglePosterView,this));
+				toggle.append(toggleBanner).append(' | ').append(togglePoster).append(' | ').append(toggleLandscape);
 				this.toggle=toggle;				
 				jQuery.post(JSON_RPC + '?GetTVShows', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": { "fields": ["genre", "plot", "title", "lastplayed", "episode", "year", "playcount", "rating", "thumbnail", "studio", "mpaa", "premiered"] }, "id": 1}', jQuery.proxy(function(data) {
 					if (data && data.result && data.result.tvshows) {
@@ -498,8 +524,16 @@ $('#overlay').show();                        this.updatePlayButtonLocation();
 					libraryContainer.bind('scroll', { activeLibrary: libraryContainer }, jQuery.proxy(this.updateScrollEffects, this));
 					libraryContainer.trigger('scroll');
 					myScroll = new iScroll('tvshowLibraryContainer');
-					if(getCookie('TVPosterView')!=null && getCookie('TVPosterView')=='true'){
-						togglePoster.trigger('click');
+					if(getCookie('TVView')!=null && getCookie('TVView')!='banner'){
+						var view=getCookie('TVView');
+						switch(view) {
+							case 'poster':
+								togglePoster.trigger('click');
+								break;
+							case 'landscape':
+								toggleLandscape.trigger('click')
+								break;						
+						}
 					}
 				}, this), 'json');					
 			} else {
