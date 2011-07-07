@@ -87,10 +87,12 @@ NowPlayingManager.prototype = {
 			return false;
 		},
 		hideFooter: function() {
-			$('#footerPopover').hide();			
+			$('#footerPopover').hide();
+			$('#overlay').css('bottom','0px');			
 		},
 		showFooter: function() {
-			$('#footerPopover').show();			
+			$('#footerPopover').show();
+			$('#overlay').css('bottom','150px');		
 		},
 		nextTrack: function() {
 			if (this.activePlayer) {

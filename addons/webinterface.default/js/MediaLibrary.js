@@ -355,18 +355,18 @@ MediaLibrary.prototype = {
 			//Update ActiveSeason
 			this.tvActiveSeason = selectedVal;			
 			//Populate new listings
-			jQuery.post(JSON_RPC + '?GetTVSeasonEpisodes', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "fields": [ "title", "thumbnail","episode"], "season" : ' + seasons[selectedVal].season + ', "tvshowid" : ' + event.data.tvshow + ' }, "id": 1}', jQuery.proxy(function(data) {
+			jQuery.post(JSON_RPC + '?GetTVSeasonEpisodes', '{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "fields": [ "title", "thumbnail","episode","plot","season"], "season" : ' + seasons[selectedVal].season + ', "tvshowid" : ' + event.data.tvshow + ' }, "id": 1}', jQuery.proxy(function(data) {
 				var episodeListingsContainer = $('<div>').addClass('episodeListingsContainer');
 				var episodeTable= $('<table>').addClass('seasonView').html('<thead><tr class="headerRow"><th class="thumbHeader">N&deg;</th><th>Title</th><th class="thumbHeader">Thumb</th><th class="thumbHeader">Details</th></tr></thead><tbody class="resultSet"></tbody>');	
 				$.each($(data.result.episodes), jQuery.proxy(function(i, item) {
-					var episodeRow = $('<tr>').addClass('episodeRow').addClass('tr' + i % 2).bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this));;
+					var episodeRow = $('<tr>').addClass('episodeRow').addClass('tr' + i % 2);
 					var episodePictureImg = $('<img>').bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this)).css('cursor','pointer');
 					episodePictureImg.attr('src', this.getThumbnailPath(item.thumbnail));
-					var episodePicture=$('<td>').addClass('episodeThumb').append(episodePictureImg);
-					var episodeNumber = $('<td>').addClass('episodeNumber').html(item.episode);
-					var episodeTitle = $('<td>').html(item.title);
-					var episodeDetails = $('<td>').html('info').bind('click',{episodeid:item.episode});
-					episodeRow.append(episodeNumber).append(episodeTitle).append(episodePicture);
+					var episodePicture=$('<td>').addClass('episodeThumb').append(episodePictureImg).bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this));
+					var episodeNumber = $('<td>').addClass('episodeNumber').html(item.episode).bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this));
+					var episodeTitle = $('<td>').html(item.title).bind('click', { episode: item }, jQuery.proxy(this.playTVShow, this));
+					var episodeDetails = $('<td class="info">').html('').bind('click',{episode:item}, jQuery.proxy(this.displayEpisodeDetails, this)).css('cursor','pointer');
+					episodeRow.append(episodeNumber).append(episodeTitle).append(episodePicture).append(episodeDetails);
 					episodeTable.append(episodeRow);
 				}, this));
 				episodeListingsContainer.append(episodeTable);
@@ -374,12 +374,49 @@ MediaLibrary.prototype = {
 			}, this), 'json');
 			
 		},
+		
+		displayEpisodeDetails: function(event) {
+			var episodeDetails = $('<div>').attr('id', 'episode-' + event.data.episode.episodeid).addClass('episodePopoverContainer');
+			episodeDetails.append($('<img>').attr('src', '/images/close-button.png').addClass('closeButton').bind('click', jQuery.proxy(this.hideOverlay, this)));
+			episodeDetails.append($('<img>').attr('src', this.getThumbnailPath(event.data.episode.thumbnail)).addClass('episodeCover'));
+			episodeDetails.append($('<div>').addClass('playIcon').bind('click', {episode: event.data.episode}, jQuery.proxy(this.playTVShow, this)));
+			var episodeTitle = $('<p>').addClass('episodeTitle');
+			var yearText = event.data.episode.year ? ' <span class="year">(' + event.data.episode.year + ')</span>' : '';
+			episodeTitle.html(event.data.episode.title + yearText);
+			episodeDetails.append(episodeTitle);
+			if (event.data.episode.runtime) {
+				episodeDetails.append($('<p>').addClass('runtime').html('<strong>Runtime:</strong> ' + event.data.epispde.runtime + ' minutes'));
+			}
+			if (event.data.episode.season) {
+				episodeDetails.append($('<p>').addClass('season').html('<strong>Season:</strong> ' + event.data.episode.season));
+			}
+			if (event.data.episode.episode) {
+				episodeDetails.append($('<p>').addClass('episode').html('<strong>Episode:</strong> ' + event.data.episode.episode));
+			}
+			if (event.data.episode.plot) {
+				episodeDetails.append($('<p>').addClass('plot').html('<strong>Plot:</strong> <br/><br/>' +event.data.episode.plot));
+			}
+			if (event.data.episode.genre) {
+				episodeDetails.append($('<p>').addClass('genre').html('<strong>Genre:</strong> ' + event.data.episode.genre));
+			}
+			if (event.data.episode.rating) {
+				//Todo
+			}
+			if (event.data.episode.director) {
+				episodeDetails.append($('<p>').addClass('director').html('<strong>Directed By:</strong> ' + event.data.episode.director));
+			}
+			this.activeCover = episodeDetails;
+			$('body').append(episodeDetails);
+			$('#overlay').show();
+			this.updatePlayButtonLocation();
+		},
+		
 		playTVShow: function(event) {
 			jQuery.post(JSON_RPC + '?ClearPlaylist', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Clear", "id": 1}', jQuery.proxy(function(data) {
 				//check that clear worked.
 				jQuery.post(JSON_RPC + '?AddTvShowToPlaylist', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Add", "params": { "item": { "episodeid": ' + event.data.episode.episodeid + ' } }, "id": 1}', jQuery.proxy(function(data) {
 					//play specific song in playlist
-					jQuery.post(JSON_RPC + '?PlaylistItemPlay', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Play", "params": { "item": 0 }, "id": 1}', function() {}, 'json');
+					jQuery.post(JSON_RPC + '?PlaylistItemPlay', '{"jsonrpc": "2.0", "method": "VideoPlaylist.Play", "params": { "item": 0 }, "id": 1}', function(data) {this.hideOverlay();}, 'json');
 				}, this), 'json');
 			}, this), 'json');
 		},
@@ -395,8 +432,19 @@ MediaLibrary.prototype = {
 			if (movieContainer.length > 0) {
 				var playIcon = $('.playIcon');
 				if (playIcon.length > 0) {
-					playIcon.width($(movieContainer[0]).width());
-					playIcon.height($(movieContainer[0]).height());
+					var heightpi=$(movieContainer[0]).height();
+					playIcon.width(Math.floor(0.65*heightpi));
+					playIcon.height(heightpi);
+				}
+			}
+			var episodeContainer = $('.episodeCover');
+			if (episodeContainer.length > 0) {
+				var playIcon = $('.playIcon');
+				if (playIcon.length > 0) {
+					var widthpi=$(episodeContainer[0]).width();
+					playIcon.width(widthpi);
+					//assume 16/9 thumb
+					playIcon.height(Math.floor(widthpi*9/16));
 				}
 			}
 		},
