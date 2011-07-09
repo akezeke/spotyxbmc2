@@ -103,7 +103,7 @@ body {
 	}
 	
 #tvshowLibraryContainer {
-	padding-top:25px;	
+	padding-top:40px;	
 	}
 		
 #libraryContainer .floatableAlbum,
@@ -367,6 +367,11 @@ div.imgWrapper div.inner {
 	left: 10%;
 	right: 10%;
 	opacity: 0.9;
+	}
+
+.episodePopoverContainer{
+	bottom:none;
+	top:30%;
 	}
 
 .moviePopoverContainer .closeButton, .episodePopoverContainer .closeButton {
