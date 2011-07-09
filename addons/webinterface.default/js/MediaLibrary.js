@@ -198,29 +198,27 @@ MediaLibrary.prototype = {
 							}
 							$('#albumDetails' + event.data.album.albumid + ' .resultSet').append(trackRow);
 						}
-						var trackRow = $('<tr>').addClass('trackRow').addClass('tr' + i % 2).bind('click', { album: event.data.album, itmnbr: i }, jQuery.proxy(this.playTrack, this));
-;
-                                                
+						var trackRow = $('<tr>').addClass('trackRow').addClass('tr' + i % 2).bind('click', { album: event.data.album, itmnbr: i }, jQuery.proxy(this.playTrack,this));
 						var trackNumberTD = $('<td>')
 							.html(item.track)
-							//.bind('click', { song: item, album: event.data.album }, jQuery.proxy(this.playTrack, this));
+							
 						trackRow.append(trackNumberTD);
 						var trackTitleTD = $('<td>')
 							.html(item.title);
-							//.bind('click', { song: item, album: event.data.album }, jQuery.proxy(this.playTrack, this));
+							
 						trackRow.append(trackTitleTD);
 						var trackDurationTD = $('<td>')
 							.addClass('time')
 							.html(durationToString(item.duration));
-							//.bind('click', { song: item, album: event.data.album }, jQuery.proxy(this.playTrack, this));
+							
 						trackRow.append(trackDurationTD);
 						var trackArtistTD = $('<td>')
 							.html(item.artist);
-							//.bind('click', { song: item, album: event.data.album }, jQuery.proxy(this.playTrack, this));
+							
 						trackRow.append(trackArtistTD);
 						var trackGenreTD = $('<td>')
 							.html(item.genre);
-							//.bind('click', { song: item, album: event.data.album }, jQuery.proxy(this.playTrack, this));
+							
 						trackRow.append(trackGenreTD);
 						$('#albumDetails' + event.data.album.albumid + ' .resultSet').append(trackRow);
 					}, this));
