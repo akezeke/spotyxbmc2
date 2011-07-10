@@ -52,6 +52,7 @@
 #include "network/libscrobbler/lastfmscrobbler.h"
 #include "network/libscrobbler/librefmscrobbler.h"
 #include "GUIPassword.h"
+#include "InertialScrollingHandler.h"
 #include "ApplicationMessenger.h"
 #include "SectionLoader.h"
 #include "cores/DllLoader/DllLoaderContainer.h"
@@ -349,6 +350,7 @@ CApplication::CApplication(void) : m_itemCurrentFile(new CFileItem), m_progressT
   m_bStandalone = false;
   m_bEnableLegacyRes = false;
   m_bSystemScreenSaverEnable = false;
+  m_pInertialScrollingHandler = new CInertialScrollingHandler();
 }
 
 CApplication::~CApplication(void)
@@ -360,6 +362,7 @@ CApplication::~CApplication(void)
 #endif
 
   delete m_dpms;
+  delete m_pInertialScrollingHandler;
 }
 
 bool CApplication::OnEvent(XBMC_Event& newEvent)
@@ -2189,7 +2192,7 @@ bool CApplication::OnKey(const CKey& key)
               action.GetID() == ACTION_SELECT_ITEM ||
               action.GetID() == ACTION_ENTER ||
               action.GetID() == ACTION_PREVIOUS_MENU ||
-              action.GetID() == ACTION_CLOSE_DIALOG))
+              action.GetID() == ACTION_NAV_BACK))
         {
           // the action isn't plain navigation - check for a keyboard-specific keymap
           action = CButtonTranslator::GetInstance().GetAction(WINDOW_DIALOG_KEYBOARD, key, false);
@@ -2315,13 +2318,18 @@ bool CApplication::OnAction(const CAction &action)
       return OnAction(CAction(ACTION_PLAYER_PLAY));
   }
 
-// in normal case
-  // just pass the action to the current window and let it handle it
-  if (g_windowManager.OnAction(action))
+  //if the action would start or stop inertial scrolling
+  //by gesture - bypass the normal OnAction handler of current window
+  if( !m_pInertialScrollingHandler->CheckForInertialScrolling(&action) )
   {
-    m_navigationTimer.StartZero();
-    return true;
-  }
+    // in normal case
+    // just pass the action to the current window and let it handle it
+    if (g_windowManager.OnAction(action))
+    {
+      m_navigationTimer.StartZero();
+      return true;
+    }
+  } 
 
   // handle extra global presses
 
@@ -2657,6 +2665,7 @@ void CApplication::FrameMove()
   ProcessRemote(frameTime);
   ProcessGamepad(frameTime);
   ProcessEventServer(frameTime);
+  m_pInertialScrollingHandler->ProcessInertialScroll(frameTime);
 
   // Process events and animate controls
   if (!m_bStop)

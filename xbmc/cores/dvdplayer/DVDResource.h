@@ -1,3 +1,5 @@
+#pragma once
+
 /*
  *      Copyright (C) 2005-2008 Team XBMC
  *      http://www.xbmc.org
@@ -19,15 +21,24 @@
  *
  */
 
-#include "GUIStandardWindow.h"
-#include "GUIWindowManager.h"
-#include "settings/AdvancedSettings.h"
-#include "Key.h"
+#include <assert.h>
+#include "threads/Atomics.h"
 
-CGUIStandardWindow::CGUIStandardWindow(int id, const CStdString &xmlFile) : CGUIWindow(id, xmlFile)
+template<typename T> struct IDVDResourceCounted
 {
-}
+  IDVDResourceCounted() : m_refs(1) {}
+  virtual T*   Acquire()
+  {
+    AtomicIncrement(&m_refs);
+    return (T*)this;
+  }
 
-CGUIStandardWindow::~CGUIStandardWindow(void)
-{
-}
+  virtual long Release()
+  {
+    long count = AtomicDecrement(&m_refs);
+    assert(count >= 0);
+    if (count == 0) delete (T*)this;
+    return count;
+  }
+  long m_refs;
+};

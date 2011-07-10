@@ -392,9 +392,6 @@ MediaLibrary.prototype = {
 			if (event.data.episode.episode) {
 				episodeDetails.append($('<p>').addClass('episode').html('<strong>Episode:</strong> ' + event.data.episode.episode));
 			}
-			if (event.data.episode.plot) {
-				episodeDetails.append($('<p>').addClass('plot').html('<strong>Plot:</strong> <br/><br/>' +event.data.episode.plot));
-			}
 			if (event.data.episode.genre) {
 				episodeDetails.append($('<p>').addClass('genre').html('<strong>Genre:</strong> ' + event.data.episode.genre));
 			}

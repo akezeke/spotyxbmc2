@@ -573,9 +573,6 @@
     <ClCompile Include="..\..\xbmc\cores\VideoRenderers\BaseRenderer.cpp">
       <Filter>cores\VideoRenderers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xbmc\cores\VideoRenderers\LinuxRenderer.cpp">
-      <Filter>cores\VideoRenderers</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\xbmc\cores\VideoRenderers\LinuxRendererGL.cpp">
       <Filter>cores\VideoRenderers</Filter>
     </ClCompile>
@@ -2475,6 +2472,7 @@
     <ClCompile Include="..\..\xbmc\spotinterface.cpp">
       <Filter>spotyxbmc</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\InertialScrollingHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\xbmc\win32\pch.h">
@@ -2943,9 +2941,6 @@
       <Filter>cores\DllLoader\exports\util</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\VideoRenderers\BaseRenderer.h">
-      <Filter>cores\VideoRenderers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xbmc\cores\VideoRenderers\LinuxRenderer.h">
       <Filter>cores\VideoRenderers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\cores\VideoRenderers\LinuxRendererGL.h">
@@ -4967,6 +4962,7 @@
     <ClInclude Include="..\..\appkey.h">
       <Filter>spotyxbmc</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\xbmc\InertialScrollingHandler.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\xbmc\win32\XBMC.ico">
