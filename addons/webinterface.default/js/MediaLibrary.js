@@ -35,6 +35,7 @@ MediaLibrary.prototype = {
 			$('#movieLibrary').click(jQuery.proxy(this.movieLibraryOpen, this));
 			$('#tvshowLibrary').click(jQuery.proxy(this.tvshowLibraryOpen, this));
 			$('#pictureLibrary').click(jQuery.proxy(this.pictureLibraryOpen, this));
+			$('#testJSON').click(jQuery.proxy(this.testJSON, this));
 			$('#overlay').click(jQuery.proxy(this.hideOverlay, this));
 			$(window).resize(jQuery.proxy(this.updatePlayButtonLocation, this));
 		},
@@ -61,6 +62,41 @@ MediaLibrary.prototype = {
 			
 			return result;
 		},
+		testJSON: function(event) {
+			this.resetPage();
+			$('#testJSON').addClass('selected');
+			$('.contentContainer').hide();
+			var libraryContainer = $('#libraryContainer');
+			if (!libraryContainer || libraryContainer.length == 0) {
+				$('#spinner').show();
+				libraryContainer = $('<div>');
+				libraryContainer.attr('id', 'libraryContainer')
+								.addClass('contentContainer');
+				$('#content').append(libraryContainer);
+				var form=$('<form id="formJSON">');
+				var jinit='{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": { "limits": { "start": 0 }, "fields": ["description", "theme", "mood", "style", "type", "label", "artist", "genre", "rating", "title", "year", "thumbnail"], "sort": { "method": "artist" } }, "id": 1}';
+				textarea =$('<textarea>').val(jinit);
+				form.append(textarea);
+				submit=$('<button id="sendJSON">Send</button>');
+				form.append(submit);
+				libraryContainer.append(form);	
+				submit.bind('click', { }, jQuery.proxy(this.sendJSONtest, this));
+			} else {
+				libraryContainer.show();
+				libraryContainer.trigger('scroll');
+			}
+
+			$('#spinner').hide();
+		},
+		sendJSONtest: function(event) {
+			var jj=$('#formJSON textarea').val();
+			jQuery.post(JSON_RPC + '?GetAlbums', jj , jQuery.proxy(function(data) {
+				var jtext=JSON.stringify(data);
+				var result=$('<p>').html(jtext).css('height','400px').css('width','600px').css('overflow','auto').css('font-size','12px').css('padding-left','50px').css('border','1px solid black');
+				$('#libraryContainer').append(result);	
+			}, this), 'json');
+		},
+
 		musicLibraryOpen: function(event) {
 			this.resetPage();
 			$('#musicLibrary').addClass('selected');
@@ -391,6 +427,9 @@ MediaLibrary.prototype = {
 			}
 			if (event.data.episode.episode) {
 				episodeDetails.append($('<p>').addClass('episode').html('<strong>Episode:</strong> ' + event.data.episode.episode));
+			}
+			if (event.data.episode.plot) {
+				episodeDetails.append($('<p>').addClass('plot').html('<strong>Plot:</strong> <br/><br/>' +event.data.episode.plot));
 			}
 			if (event.data.episode.genre) {
 				episodeDetails.append($('<p>').addClass('genre').html('<strong>Genre:</strong> ' + event.data.episode.genre));
