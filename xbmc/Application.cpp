@@ -3136,6 +3136,11 @@ bool CApplication::Cleanup()
 
     CAddonMgr::Get().DeInit();
 
+#if defined(HAS_LIRC) || defined(HAS_IRSERVERSUITE)
+    CLog::Log(LOGNOTICE, "closing down remote control service");
+    g_RemoteControl.Disconnect();
+#endif
+
     CLog::Log(LOGNOTICE, "unload sections");
 
 #ifdef HAS_PERFORMANCE_SAMPLE
