@@ -35,6 +35,7 @@ MediaLibrary.prototype = {
 			$('#movieLibrary').click(jQuery.proxy(this.movieLibraryOpen, this));
 			$('#tvshowLibrary').click(jQuery.proxy(this.tvshowLibraryOpen, this));
 			$('#pictureLibrary').click(jQuery.proxy(this.pictureLibraryOpen, this));
+			$('#testJSON').click(jQuery.proxy(this.testJSON, this));
 			$('#overlay').click(jQuery.proxy(this.hideOverlay, this));
 			$(window).resize(jQuery.proxy(this.updatePlayButtonLocation, this));
 		},
@@ -61,6 +62,41 @@ MediaLibrary.prototype = {
 			
 			return result;
 		},
+		testJSON: function(event) {
+			this.resetPage();
+			$('#testJSON').addClass('selected');
+			$('.contentContainer').hide();
+			var libraryContainer = $('#libraryContainer');
+			if (!libraryContainer || libraryContainer.length == 0) {
+				$('#spinner').show();
+				libraryContainer = $('<div>');
+				libraryContainer.attr('id', 'libraryContainer')
+								.addClass('contentContainer');
+				$('#content').append(libraryContainer);
+				var form=$('<form id="formJSON">');
+				var jinit='{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": { "limits": { "start": 0 }, "fields": ["description", "theme", "mood", "style", "type", "label", "artist", "genre", "rating", "title", "year", "thumbnail"], "sort": { "method": "artist" } }, "id": 1}';
+				textarea =$('<textarea>').val(jinit);
+				form.append(textarea);
+				submit=$('<button id="sendJSON">Send</button>');
+				form.append(submit);
+				libraryContainer.append(form);	
+				submit.bind('click', { }, jQuery.proxy(this.sendJSONtest, this));
+			} else {
+				libraryContainer.show();
+				libraryContainer.trigger('scroll');
+			}
+
+			$('#spinner').hide();
+		},
+		sendJSONtest: function(event) {
+			var jj=$('#formJSON textarea').val();
+			jQuery.post(JSON_RPC + '?GetAlbums', jj , jQuery.proxy(function(data) {
+				var jtext=JSON.stringify(data);
+				var result=$('<p>').html(jtext).css('height','400px').css('width','600px').css('overflow','auto').css('font-size','12px').css('padding-left','50px').css('border','1px solid black');
+				$('#libraryContainer').append(result);	
+			}, this), 'json');
+		},
+
 		musicLibraryOpen: function(event) {
 			this.resetPage();
 			$('#musicLibrary').addClass('selected');
@@ -177,7 +213,7 @@ MediaLibrary.prototype = {
 			$('#topScrollFade').hide();
 			if (!albumDetailsContainer || albumDetailsContainer.length == 0) {
 				$('#spinner').show();
-				jQuery.post(JSON_RPC + '?GetSongs', '{"jsonrpc": "2.0", "method": "AudioLibrary.GetSongs", "params": { "fields": ["title", "artist", "genre", "track", "duration", "year", "rating", "playcount"], "albumid" : ' + event.data.album.albumid + ' }, "id": 1}', jQuery.proxy(function(data) {
+				jQuery.post(JSON_RPC + '?GetSongs', '{"jsonrpc": "2.0", "method": "AudioLibrary.GetSongs", "params": { "fields": ["title", "artist", "genre", "track", "duration", "year", "rating", "playcount"], "albumid" : ' + event.data.album.albumid + ', "sort" : {"order" : "descending"} }, "id": 1}', jQuery.proxy(function(data) {
 					albumDetailsContainer = $('<div>');
 					albumDetailsContainer.attr('id', 'albumDetails' + event.data.album.albumid)
 										 .addClass('contentContainer')
@@ -294,7 +330,6 @@ MediaLibrary.prototype = {
 										  .addClass('contentContainer')
 										  .addClass('tvshowContainer');
 					var showThumb = this.generateThumb('tvshowseason', event.data.tvshow.thumbnail, event.data.tvshow.title);
-					
 					if (data && data.result && data.result.seasons && data.result.seasons.length > 0) {
 						var showDetails = $('<div>').addClass('showDetails');
 						showDetails.append(toggle);
@@ -446,11 +481,11 @@ MediaLibrary.prototype = {
 					//assume 16/9 thumb
 					playIcon.height(Math.floor(widthpi*9/16));
 				}
+         
 			}
 		},
 		playMovie: function(event) {
 			var file = this.replaceAll(event.data.movie.file, "\\", "\\\\");
-			alert(file);
 			jQuery.post(JSON_RPC + '?PlayMovie', '{"jsonrpc": "2.0", "method": "XBMC.Play", "params": { "file": "' + file + '" }, "id": 1}', jQuery.proxy(function(data) {
 				this.hideOverlay();
 			}, this), 'json');
@@ -458,7 +493,8 @@ MediaLibrary.prototype = {
 		displayMovieDetails: function(event) {
 			var movieDetails = $('<div>').attr('id', 'movie-' + event.data.movie.movieid).addClass('moviePopoverContainer');
 			movieDetails.append($('<img>').attr('src', '/images/close-button.png').addClass('closeButton').bind('click', jQuery.proxy(this.hideOverlay, this)));
-			movieDetails.append($('<img>').attr('src', this.getThumbnailPath(event.data.movie.thumbnail)).addClass('movieCover'));
+			movieDetails.append($('<img>').css('cursor','pointer').attr('src', this.getThumbnailPath(event.data.movie.thumbnail)).addClass('movieCover').bind('click', {movie: event.data.movie}, jQuery.proxy(this.playMovie, this)));
+
 			movieDetails.append($('<div>').addClass('playIcon').bind('click', {movie: event.data.movie}, jQuery.proxy(this.playMovie, this)));
 			var movieTitle = $('<p>').addClass('movieTitle');
 			var yearText = event.data.movie.year ? ' <span class="year">(' + event.data.movie.year + ')</span>' : '';
@@ -481,8 +517,8 @@ MediaLibrary.prototype = {
 			}
 			this.activeCover = movieDetails;
 			$('body').append(movieDetails);
-			$('#overlay').show();
-			this.updatePlayButtonLocation();
+			                        this.updatePlayButtonLocation();
+$('#overlay').show();                        this.updatePlayButtonLocation();
 		},
 		playTrack: function(event) {
 			jQuery.post(JSON_RPC + '?ClearPlaylist', '{"jsonrpc": "2.0", "method": "AudioPlaylist.Clear", "id": 1}', jQuery.proxy(function(data) {
