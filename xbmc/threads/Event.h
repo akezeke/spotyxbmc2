@@ -44,9 +44,10 @@ namespace XbmcThreads
 class CEvent
 {
   bool manualReset;
-  bool signaled;
+  volatile bool signaled;
   unsigned int numWaits;
 
+  CCriticalSection groupListMutex; // lock for the groups list
   std::vector<XbmcThreads::CEventGroup*> * groups;
 
   /**
@@ -54,12 +55,11 @@ class CEvent
    *  predicate being monitored to include both the signaled and interrupted
    *  states.
    */
-  XbmcThreads::TightConditionVariable<bool&> condVar;
+  XbmcThreads::TightConditionVariable<volatile bool&> condVar;
   CCriticalSection mutex;
 
   friend class XbmcThreads::CEventGroup;
 
-  void groupSet();
   void addGroup(XbmcThreads::CEventGroup* group);
   void removeGroup(XbmcThreads::CEventGroup* group);
 
@@ -75,7 +75,7 @@ public:
     manualReset(manual), signaled(signaled_), numWaits(0), groups(NULL), condVar(signaled) {}
 
   inline void Reset() { CSingleLock lock(mutex); signaled = false; }
-  inline void Set() { CSingleLock lock(mutex); signaled = true; condVar.notifyAll(); groupSet(); }
+  void Set();
 
   /**
    * This will wait up to 'milliSeconds' milliseconds for the Event
@@ -111,11 +111,10 @@ namespace XbmcThreads
 
     unsigned int numWaits;
 
-    inline void Set(CEvent* child) { CSingleLock lock(mutex); signaled = child; condVar.notifyAll(); }
+    // This is ONLY called from CEvent::Set.
+    inline void Set(CEvent* child) { CSingleLock l(mutex); signaled = child; condVar.notifyAll(); }
 
     friend class ::CEvent;
-
-    CEvent* anyEventsSignaled();
 
   public:
 
