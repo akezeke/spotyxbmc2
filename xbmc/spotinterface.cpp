@@ -102,6 +102,8 @@ void SpotifyInterface::cb_loggedIn(sp_session *session, sp_error error)
       
   sp_playlistcontainer_add_callbacks(sp_session_playlistcontainer(session),&g_spotifyInterface->m_pcCallbacks,NULL);
 
+  //sp_search_create(session, "foo", 0, 1, 0, 0, 0, 0, 0, NULL);  
+
   g_spotifyInterface->hideReconectingDialog();
   g_spotifyInterface->m_isWaitingForLogin = false;
   CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
@@ -837,6 +839,9 @@ bool SpotifyInterface::connect(bool forceNewUser)
     m_config.user_agent = "spotify-for-XBMC";
     // Register the callbacks.
     m_config.callbacks = &m_callbacks;
+    m_config.compress_playlists = true;
+    m_config.dont_save_metadata_for_playlists = false;
+    m_config.initially_unload_playlists = false;
 
     m_error = sp_session_create(&m_config, &m_session);
     
