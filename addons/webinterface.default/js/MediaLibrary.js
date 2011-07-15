@@ -83,6 +83,12 @@ MediaLibrary.prototype = {
 				form.append(submit);
 				libraryContainer.append(form);	
 				submit.bind('click', { }, jQuery.proxy(this.sendJSONtest, this));
+			}
+			else {
+				libraryContainer.show();
+				libraryContainer.trigger('scroll');
+			}
+		$('#spinner').hide();
 		},
 
 		remoteControlOpen: function(event) {
