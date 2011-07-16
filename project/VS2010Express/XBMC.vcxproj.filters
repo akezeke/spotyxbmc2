@@ -1955,6 +1955,9 @@
     <ClCompile Include="..\..\xbmc\utils\StreamDetails.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\utils\StreamUtils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\utils\StringUtils.cpp">
       <Filter>utils</Filter>
     </ClCompile>
@@ -4464,6 +4467,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\StreamDetails.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\utils\StreamUtils.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="..\..\xbmc\utils\StringUtils.h">
