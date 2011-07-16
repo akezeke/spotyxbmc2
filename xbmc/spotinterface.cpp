@@ -137,12 +137,14 @@ void SpotifyInterface::cb_imageLoaded(sp_image *image, void *userdata)
   CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb"); 
     try{
       CFileItem *item = (CFileItem*)userdata;
+  CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 2"); 
       if (item != 0){
         spInt->m_noWaitingThumbs--;  
-        
+          CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 3"); 
         CStdString fileName;
         fileName.Format("%s", item->GetExtraInfo());    
         CFile file;
+  CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 4"); 
 
         //if there is a wierd name, something is wrong, or do we allready have the image, return
         if (XFILE::CFile::Exists(fileName)) 
@@ -1770,7 +1772,7 @@ CFileItemPtr SpotifyInterface::spTrackToItem(sp_track *spTrack, SPOTIFY_TYPE typ
   song.strArtist = sp_artist_name(spArtist);
 
   CFileItemPtr pItem(new CFileItem(song));
-  if (loadthumb)
+  if (loadthumb && sp_track_is_available(m_session, spTrack))
   {
     CStdString albumUri;
     char spotify_album_uri[256];
