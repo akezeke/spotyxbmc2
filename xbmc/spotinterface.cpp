@@ -136,13 +136,14 @@ void SpotifyInterface::cb_imageLoaded(sp_image *image, void *userdata)
   {
   CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb"); 
     try{
-      CFileItem *item = (CFileItem*)userdata;
+      CFileItem *item = (CFileItem*) userdata;
   CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 2"); 
-      if (item != 0){
+      if (item){
         spInt->m_noWaitingThumbs--;  
           CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 3"); 
         CStdString fileName;
-        fileName.Format("%s", item->GetExtraInfo());    
+        CStdString extra=item->GetExtraInfo();
+        fileName.Format("%s", extra);    
         CFile file;
   CLog::Log( LOGDEBUG, "Spotifylog: fetching thumb 4"); 
 
@@ -1812,6 +1813,7 @@ bool SpotifyInterface::requestThumb(unsigned char *imageId, CStdString Uri, CFil
     break;
   }
 
+  CLog::Log( LOGDEBUG, "Spotifylog: thumb: %s", thumb.c_str());
   pItem->SetExtraInfo(thumb);
   if (XFILE::CFile::Exists(thumb))
   {
@@ -1822,12 +1824,16 @@ bool SpotifyInterface::requestThumb(unsigned char *imageId, CStdString Uri, CFil
   {
     //request for the image
     sp_image *spImage = sp_image_create(m_session, (byte*)imageId);
-    if (spImage)
+    sp_error spError = sp_image_error(spImage);
+    if(spError == 0)
     {
       //ok there is one, so download it!
       m_noWaitingThumbs++;
       sp_image_add_load_callback(spImage, &cb_imageLoaded, pItem.get());
       return true;
+    }
+    else{
+  	CLog::Log( LOGDEBUG, "error loading thumb %d",spError); 
     }
   }
   return false;
