@@ -18,6 +18,7 @@
  *  http://www.gnu.org/copyleft/gpl.html
  *
  */
+#include "threads/SystemClock.h"
 #include "system.h"
 #ifdef __APPLE__
 #include <sys/param.h>
@@ -452,6 +453,27 @@ bool CUtil::TestGetQualifiedFilename()
   if (file != "smb://my/foo/bar") return false;
   file = "smb://foo/bar/"; GetQualifiedFilename("upnp://", file);
   if (file != "smb://foo/bar/") return false;
+  return true;
+}
+
+bool CUtil::TestMakeLegalPath()
+{
+  CStdString path;
+#ifdef _WIN32
+  path = "C:\\foo\\bar"; path = MakeLegalPath(path);
+  if (path != "C:\\foo\\bar") return false;
+  path = "C:\\foo:\\bar\\"; path = MakeLegalPath(path);
+  if (path != "C:\\foo_\\bar\\") return false;
+#elif
+  path = "/foo/bar/"; path = MakeLegalPath(path);
+  if (path != "/foo/bar/") return false;
+  path = "/foo?/bar"; path = MakeLegalPath(path);
+  if (path != "/foo_/bar") return false;
+#endif
+  path = "smb://foo/bar"; path = MakeLegalPath(path);
+  if (path != "smb://foo/bar") return false;
+  path = "smb://foo/bar?/"; path = MakeLegalPath(path);
+  if (path != "smb://foo/bar_/") return false;
   return true;
 }
 #endif
@@ -1152,27 +1174,12 @@ bool CUtil::CreateDirectoryEx(const CStdString& strPath)
     return false;
   }
 
-  CURL url(strPath);
-  // silly CStdString can't take a char in the constructor
-  CStdString sep(1, url.GetDirectorySeparator());
-
-  // split the filename portion of the URL up into separate dirs
-  CStdStringArray dirs;
-  StringUtils::SplitString(url.GetFileName(), sep, dirs);
-
-  // we start with the root path
-  CStdString dir = url.GetWithoutFilename();
-  unsigned int i = 0;
-  if (dir.IsEmpty())
-  { // local directory - start with the first dirs member so that
-    // we ensure CUtil::AddFileToFolder() below has something to work with
-    dir = dirs[i++] + sep;
-  }
-  // and append the rest of the directories successively, creating each dir
-  // as we go
-  for (; i < dirs.size(); i++)
+  CStdStringArray dirs = URIUtils::SplitPath(strPath);
+  CStdString dir(dirs.front());
+  URIUtils::AddSlashAtEnd(dir);
+  for (CStdStringArray::iterator it = dirs.begin() + 1; it != dirs.end(); it ++)
   {
-    dir = URIUtils::AddFileToFolder(dir, dirs[i]);
+    dir = URIUtils::AddFileToFolder(dir, *it);
     CDirectory::Create(dir);
   }
 
@@ -1205,14 +1212,27 @@ CStdString CUtil::MakeLegalFileName(const CStdString &strFile, int LegalType)
   return result;
 }
 
-// same as MakeLegalFileName, but we assume that we're passed a complete path,
-// and just legalize the filename
+// legalize entire path
 CStdString CUtil::MakeLegalPath(const CStdString &strPathAndFile, int LegalType)
 {
-  CStdString strPath;
-  URIUtils::GetDirectory(strPathAndFile,strPath);
-  CStdString strFileName = URIUtils::GetFileName(strPathAndFile);
-  return strPath + MakeLegalFileName(strFileName, LegalType);
+  if (URIUtils::IsStack(strPathAndFile))
+    return MakeLegalPath(CStackDirectory::GetFirstStackedFile(strPathAndFile));
+  if (URIUtils::IsMultiPath(strPathAndFile))
+    return MakeLegalPath(CMultiPathDirectory::GetFirstPath(strPathAndFile));
+  if (!URIUtils::IsHD(strPathAndFile) && !URIUtils::IsSmb(strPathAndFile) && !URIUtils::IsNfs(strPathAndFile))
+    return strPathAndFile; // we don't support writing anywhere except HD, SMB and NFS - no need to legalize path
+
+  bool trailingSlash = URIUtils::HasSlashAtEnd(strPathAndFile);
+  CStdStringArray dirs = URIUtils::SplitPath(strPathAndFile);
+  // we just add first token to path and don't legalize it - possible values: 
+  // "X:" (local win32), "" (local unix - empty string before '/') or
+  // "protocol://domain"
+  CStdString dir(dirs.front());
+  URIUtils::AddSlashAtEnd(dir);
+  for (CStdStringArray::iterator it = dirs.begin() + 1; it != dirs.end(); it ++)
+    dir = URIUtils::AddFileToFolder(dir, MakeLegalFileName(*it, LegalType));
+  if (trailingSlash) URIUtils::AddSlashAtEnd(dir);
+  return dir;
 }
 
 CStdString CUtil::ValidatePath(const CStdString &path, bool bFixDoubleSlashes /* = false */)
@@ -1322,7 +1342,11 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
   if( function.Left(5).Equals("xbmc.", false) )
     function.Delete(0, 5);
 
-  // now split up our parameters - we may have quotes to deal with as well as brackets and whitespace
+  SplitParams(paramString, parameters);
+}
+
+void CUtil::SplitParams(const CStdString &paramString, std::vector<CStdString> &parameters)
+{
   bool inQuotes = false;
   bool lastEscaped = false; // only every second character can be escaped
   int inFunction = 0;
@@ -1355,7 +1379,7 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
       { // start of function
         inFunction++;
       }
-      if (!inFunction && !URIUtils::IsStack(paramString) && ch == ',')
+      if (!inFunction && ch == ',')
       { // not in a function, so a comma signfies the end of this parameter
         if (whiteSpacePos)
           parameter = parameter.Left(whiteSpacePos);
@@ -1386,7 +1410,7 @@ void CUtil::SplitExecFunction(const CStdString &execString, CStdString &function
     parameter += ch;
   }
   if (inFunction || inQuotes)
-    CLog::Log(LOGWARNING, "%s(%s) - end of string while searching for ) or \"", __FUNCTION__, execString.c_str());
+    CLog::Log(LOGWARNING, "%s(%s) - end of string while searching for ) or \"", __FUNCTION__, paramString.c_str());
   if (whiteSpacePos)
     parameter = parameter.Left(whiteSpacePos);
   // trim off start and end quotes
@@ -1882,10 +1906,7 @@ bool CUtil::SupportsFileOperations(const CStdString& strPath)
     return CMythDirectory::SupportsFileOperations(strPath);
   }
   if (URIUtils::IsStack(strPath))
-  {
-    CStackDirectory dir;
-    return SupportsFileOperations(dir.GetFirstStackedFile(strPath));
-  }
+    return SupportsFileOperations(CStackDirectory::GetFirstStackedFile(strPath));
   if (URIUtils::IsMultiPath(strPath))
     return CMultiPathDirectory::SupportsFileOperations(strPath);
 
@@ -2205,7 +2226,7 @@ CStdString CUtil::GetFrameworksPath(bool forPython)
 
 void CUtil::ScanForExternalSubtitles(const CStdString& strMovie, std::vector<CStdString>& vecSubtitles )
 {
-  unsigned int startTimer = CTimeUtils::GetTimeMS();
+  unsigned int startTimer = XbmcThreads::SystemClockMillis();
   
   // new array for commons sub dirs
   const char * common_sub_dirs[] = {"subs",
@@ -2389,7 +2410,7 @@ void CUtil::ScanForExternalSubtitles(const CStdString& strMovie, std::vector<CSt
       delete pStream;
     }
   }
-  CLog::Log(LOGDEBUG,"%s: END (total time: %i ms)", __FUNCTION__, (int)(CTimeUtils::GetTimeMS() - startTimer));
+  CLog::Log(LOGDEBUG,"%s: END (total time: %i ms)", __FUNCTION__, (int)(XbmcThreads::SystemClockMillis() - startTimer));
 }
 
 int CUtil::ScanArchiveForSubtitles( const CStdString& strArchivePath, const CStdString& strMovieFileNameNoExt, std::vector<CStdString>& vecSubtitles )

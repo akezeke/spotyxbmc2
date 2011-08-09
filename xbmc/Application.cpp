@@ -19,6 +19,7 @@
  *
  */
 
+#include "threads/SystemClock.h"
 #include "spotinterface.h"
 #include "system.h"
 #include "Application.h"
@@ -744,7 +745,7 @@ bool CApplication::Create()
 
   g_mediaManager.Initialize();
 
-  m_lastFrameTime = CTimeUtils::GetTimeMS();
+  m_lastFrameTime = XbmcThreads::SystemClockMillis();
   m_lastRenderTime = m_lastFrameTime;
 
   return Initialize();
@@ -789,7 +790,7 @@ bool CApplication::InitDirectoriesLinux()
 
   if (xbmcPath.IsEmpty())
   {
-    xbmcPath = INSTALL_PATH;
+    xbmcPath = xbmcBinPath;
     /* Check if xbmc binaries and arch independent data files are being kept in
      * separate locations. */
     if (!CFile::Exists(URIUtils::AddFileToFolder(xbmcPath, "language")))
@@ -1784,7 +1785,7 @@ bool CApplication::LoadUserWindows()
             if (pType && pType->FirstChild())
               id = atol(pType->FirstChild()->Value());
           }
-          int visibleCondition = 0;
+          CStdString visibleCondition;
           CGUIControlFactory::GetConditionalVisibility(pRootElement, visibleCondition);
 
           if (strType.Equals("dialog"))
@@ -1807,7 +1808,7 @@ bool CApplication::LoadUserWindows()
             delete pWindow;
             continue;
           }
-          pWindow->SetVisibleCondition(visibleCondition, false);
+          pWindow->SetVisibleCondition(visibleCondition);
           g_windowManager.AddCustomWindow(pWindow);
         }
       }
@@ -1889,32 +1890,9 @@ bool CApplication::WaitFrame(unsigned int timeout)
   // Wait for all other frames to be presented
   CSingleLock lock(m_frameMutex);
   //wait until event is set, but modify remaining time
-  DWORD dwStartTime = CTimeUtils::GetTimeMS();
-  DWORD dwRemainingTime = timeout;
-  while(m_frameCount > 0)
-  {
-    ConditionVariable::TimedWaitResponse result = m_frameCond.wait(lock, dwRemainingTime);
-    if (result == ConditionVariable::TW_OK)
-    {
-      //fix time to wait because of spurious wakeups
-      DWORD dwElapsed = CTimeUtils::GetTimeMS() - dwStartTime;
-      if(dwElapsed < dwRemainingTime)
-      {
-        dwRemainingTime -= dwElapsed;
-        continue;
-      }
-      else
-      {
-        //ran out of time
-        result = ConditionVariable::TW_TIMEDOUT;
-      }
-    }
 
-    if(result == ConditionVariable::TW_TIMEDOUT)
-      break;
-    if(result < 0)
-      CLog::Log(LOGWARNING, "CApplication::WaitFrame - error from conditional wait");
-  }
+  TightConditionVariable<InversePredicate<int&> > cv(m_frameCond, InversePredicate<int&>(m_frameCount));
+  cv.wait(lock,timeout);
   done = m_frameCount == 0;
 
   return done;
@@ -1964,34 +1942,8 @@ void CApplication::Render()
     {
       CSingleLock lock(m_frameMutex);
 
-      //wait until event is set, but modify remaining time
-      DWORD dwStartTime = CTimeUtils::GetTimeMS();
-      DWORD dwRemainingTime = 100;
-      // If we have frames or if we get notified of one, consume it.
-      while(m_frameCount == 0)
-      {
-        ConditionVariable::TimedWaitResponse result = m_frameCond.wait(lock, dwRemainingTime);
-        if (result == ConditionVariable::TW_OK)
-        {
-          //fix time to wait because of spurious wakeups
-          DWORD dwElapsed = CTimeUtils::GetTimeMS() - dwStartTime;
-          if(dwElapsed < dwRemainingTime)
-          {
-            dwRemainingTime -= dwElapsed;
-            continue;
-          }
-          else
-          {
-            //ran out of time
-            result = ConditionVariable::TW_TIMEDOUT;
-          }
-        }
-
-        if(result == ConditionVariable::TW_TIMEDOUT)
-          break;
-        if(result < 0)
-          CLog::Log(LOGWARNING, "CApplication::Render - error from conditional wait");
-      }
+      TightConditionVariable<int&> cv(m_frameCond,m_frameCount);
+      cv.wait(lock,100);
 
       m_bPresentFrame = m_frameCount > 0;
       decrement = m_bPresentFrame;
@@ -2024,7 +1976,6 @@ void CApplication::Render()
   }
 
   CSingleLock lock(g_graphicsContext);
-  CTimeUtils::UpdateFrameTime();
   g_infoManager.UpdateFPS();
 
   if (g_graphicsContext.IsFullScreenVideo() && IsPlaying() && vsync_mode == VSYNC_VIDEO)
@@ -2051,7 +2002,7 @@ void CApplication::Render()
 
   lock.Leave();
 
-  unsigned int now = CTimeUtils::GetTimeMS();
+  unsigned int now = XbmcThreads::SystemClockMillis();
   if (hasRendered)
     m_lastRenderTime = now;
 
@@ -2059,7 +2010,7 @@ void CApplication::Render()
   //we don't call g_graphicsContext.Flip() anymore, this saves gpu and cpu usage
   bool flip;
   if (g_advancedSettings.m_guiDirtyRegionNoFlipTimeout >= 0)
-    flip = hasRendered || now - m_lastRenderTime < (unsigned int)g_advancedSettings.m_guiDirtyRegionNoFlipTimeout;
+    flip = hasRendered || (now - m_lastRenderTime) < (unsigned int)g_advancedSettings.m_guiDirtyRegionNoFlipTimeout;
   else
     flip = true;
 
@@ -2073,10 +2024,11 @@ void CApplication::Render()
     if (frameTime < singleFrameTime)
       Sleep(singleFrameTime - frameTime);
   }
-  m_lastFrameTime = CTimeUtils::GetTimeMS();
+  m_lastFrameTime = XbmcThreads::SystemClockMillis();
 
   if (flip)
-    g_graphicsContext.Flip();
+    g_graphicsContext.Flip(g_windowManager.GetDirty());
+  CTimeUtils::UpdateFrameTime(flip);
 
   g_renderManager.UpdateResolution();
   g_renderManager.ManageCaptures();
@@ -2604,14 +2556,14 @@ bool CApplication::OnAction(const CAction &action)
 void CApplication::UpdateLCD()
 {
 #ifdef HAS_LCD
-  static long lTickCount = 0;
+  static unsigned int lTickCount = 0;
 
   if (!g_lcd || !g_guiSettings.GetBool("videoscreen.haslcd"))
     return ;
-  long lTimeOut = 1000;
+  unsigned int lTimeOut = 1000;
   if ( m_iPlaySpeed != 1)
     lTimeOut = 0;
-  if ( ((long)CTimeUtils::GetTimeMS() - lTickCount) >= lTimeOut)
+  if ( (XbmcThreads::SystemClockMillis() - lTickCount) >= lTimeOut)
   {
     if (g_application.NavigationIdleTime() < 5)
       g_lcd->Render(ILCD::LCD_MODE_NAVIGATION);
@@ -2625,49 +2577,50 @@ void CApplication::UpdateLCD()
       g_lcd->Render(ILCD::LCD_MODE_GENERAL);
 
     // reset tick count
-    lTickCount = CTimeUtils::GetTimeMS();
+    lTickCount = XbmcThreads::SystemClockMillis();
   }
 #endif
 }
 
-void CApplication::FrameMove()
+void CApplication::FrameMove(bool processEvents)
 {
   MEASURE_FUNCTION;
 
-  // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
-  float frameTime = m_frameTime.GetElapsedSeconds();
-  m_frameTime.StartZero();
-  // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
-  if( frameTime > 0.5 ) frameTime = 0.5;
-
-  g_graphicsContext.Lock();
-  // check if there are notifications to display
-  CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
-  if (toast && toast->DoWork())
+  if (processEvents)
   {
-    if (!toast->IsDialogRunning())
-    {
-      toast->Show();
-    }
-  }
-  g_graphicsContext.Unlock();
+    // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
+    float frameTime = m_frameTime.GetElapsedSeconds();
+    m_frameTime.StartZero();
+    // never set a frametime less than 2 fps to avoid problems when debuggin and on breaks
+    if( frameTime > 0.5 ) frameTime = 0.5;
 
-  UpdateLCD();
+    g_graphicsContext.Lock();
+    // check if there are notifications to display
+    CGUIDialogKaiToast *toast = (CGUIDialogKaiToast *)g_windowManager.GetWindow(WINDOW_DIALOG_KAI_TOAST);
+    if (toast && toast->DoWork())
+    {
+      if (!toast->IsDialogRunning())
+      {
+        toast->Show();
+      }
+    }
+    g_graphicsContext.Unlock();
+
+    UpdateLCD();
 
 #if defined(HAS_LIRC) || defined(HAS_IRSERVERSUITE)
-  // Read the input from a remote
-  g_RemoteControl.Update();
+    // Read the input from a remote
+    g_RemoteControl.Update();
 #endif
 
-  // process input actions
-  CWinEvents::MessagePump();
-  ProcessHTTPApiButtons();
-  ProcessRemote(frameTime);
-  ProcessGamepad(frameTime);
-  ProcessEventServer(frameTime);
-  m_pInertialScrollingHandler->ProcessInertialScroll(frameTime);
-
-  // Process events and animate controls
+    // process input actions
+    CWinEvents::MessagePump();
+    ProcessHTTPApiButtons();
+    ProcessRemote(frameTime);
+    ProcessGamepad(frameTime);
+    ProcessEventServer(frameTime);
+    m_pInertialScrollingHandler->ProcessInertialScroll(frameTime);
+  }
   if (!m_bStop)
     g_windowManager.Process(CTimeUtils::GetFrameTime());
   g_windowManager.FrameMove();
@@ -2794,14 +2747,16 @@ bool CApplication::ProcessMouse()
   if (!g_Mouse.IsActive() || !m_AppFocused)
     return false;
 
+  // Get the mouse command ID
+  uint32_t mousecommand = g_Mouse.GetAction();
+  if (mousecommand == ACTION_NOOP)
+    return true;
+
   // Reset the screensaver and idle timers
   m_idleTimer.StartZero();
   ResetScreenSaver();
   if (WakeUpScreenSaverAndDPMS())
     return true;
-
-  // Get the mouse command ID
-  uint32_t mousecommand = g_Mouse.GetAction();
 
   // Retrieve the corresponding action
   int iWin;
@@ -2820,20 +2775,24 @@ bool CApplication::ProcessMouse()
     return false;
   }
 
-  // Process the appcommand
-  CAction newmouseaction = CAction(mouseaction.GetID(), 
-                                  g_Mouse.GetHold(MOUSE_LEFT_BUTTON), 
-                                  (float)g_Mouse.GetX(), 
-                                  (float)g_Mouse.GetY(), 
-                                  (float)g_Mouse.GetDX(), 
-                                  (float)g_Mouse.GetDY(),
-                                  mouseaction.GetName());
-
   // Log mouse actions except for move and noop
-  if (newmouseaction.GetID() != ACTION_MOUSE_MOVE && newmouseaction.GetID() != ACTION_NOOP)
-    CLog::Log(LOGDEBUG, "%s: trying mouse action %s", __FUNCTION__, newmouseaction.GetName().c_str());
+  if (mouseaction.GetID() != ACTION_MOUSE_MOVE && mouseaction.GetID() != ACTION_NOOP)
+    CLog::Log(LOGDEBUG, "%s: trying mouse action %s", __FUNCTION__, mouseaction.GetName().c_str());
 
-  return OnAction(newmouseaction);
+  // The action might not be a mouse action. For example wheel moves might
+  // be mapped to volume up/down in mouse.xml. In this case we do not want
+  // the mouse position saved in the action.
+  if (!mouseaction.IsMouse())
+    return OnAction(mouseaction);
+
+  // This is a mouse action so we need to record the mouse position
+  return OnAction(CAction(mouseaction.GetID(), 
+                          g_Mouse.GetHold(MOUSE_LEFT_BUTTON), 
+                          (float)g_Mouse.GetX(), 
+                          (float)g_Mouse.GetY(), 
+                          (float)g_Mouse.GetDX(), 
+                          (float)g_Mouse.GetDY(),
+                          mouseaction.GetName()));
 }
 
 void  CApplication::CheckForTitleChange()
@@ -4521,10 +4480,7 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
       if (message.GetMessage() == GUI_MSG_PLAYBACK_ENDED)
       {
-        // sending true to PlayNext() effectively passes bRestart to PlayFile()
-        // which is not generally what we want (except for stacks, which are
-        // handled above)
-        g_playlistPlayer.PlayNext();
+        g_playlistPlayer.PlayNext(1, true);
       }
       else
       {

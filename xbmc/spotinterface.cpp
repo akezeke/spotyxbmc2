@@ -64,7 +64,7 @@ bool SpotifyInterface::processEvents()
       disconnect();
     }
     //do we need to process the spotify api?
-    int now = CTimeUtils::GetTimeMS();
+    int now = XbmcThreads::SystemClockMillis(); 
     if (now >= m_nextEvent)
     {
       sp_session_process_events(g_spotifyInterface->m_session, &m_nextEvent);
@@ -120,7 +120,7 @@ void SpotifyInterface::cb_loggedOut(sp_session *session)
 void SpotifyInterface::cb_notifyMainThread(sp_session *session)
 {
   //spotify needs to advance itself, set it to do so the next tick
-  g_spotifyInterface->m_nextEvent = CTimeUtils::GetTimeMS();
+  g_spotifyInterface->m_nextEvent =  XbmcThreads::SystemClockMillis();
 }
 
 void SpotifyInterface::cb_logMessage(sp_session *session, const char *data)
@@ -733,7 +733,7 @@ void SpotifyInterface::cb_searchComplete(sp_search *search, void *userdata)
 SpotifyInterface::SpotifyInterface()
 {
   m_session = 0;
-  m_nextEvent = CTimeUtils::GetTimeMS();
+  m_nextEvent =  XbmcThreads::SystemClockMillis();
   m_showDisclaimer = true;
   m_isShowingReconnect = false;
   m_searchStr = "";
@@ -923,7 +923,7 @@ bool SpotifyInterface::reconnect(bool forceNewUser)
     {
       showReconectingDialog();
       connect(forceNewUser);
-      m_nextEvent = CTimeUtils::GetTimeMS();
+      m_nextEvent =  XbmcThreads::SystemClockMillis();
       processEvents();
       return false;
     }

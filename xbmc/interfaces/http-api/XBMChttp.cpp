@@ -9,6 +9,7 @@
 
 /********************************* Includes ***********************************/
 
+#include "threads/SystemClock.h"
 #include "Application.h"
 #include "XBMCConfiguration.h"
 #include "XBMChttp.h"
@@ -34,7 +35,6 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "windows/GUIMediaWindow.h"
 #include "windows/GUIWindowFileManager.h"
-#include "guilib/GUIButtonScroller.h"
 #include "filesystem/Directory.h"
 #include "filesystem/VirtualDirectory.h"
 #include "filesystem/Directory.h"
@@ -1750,13 +1750,6 @@ int CXbmcHttp::xbmcGetGUIStatus()
         if (actions.size())
           output += closeTag+openTag+"Execution:" + actions[0].m_action;
       }
-      else if (pControl->GetControlType() == CGUIControl::GUICONTROL_BUTTONBAR)
-      {
-        output += closeTag+openTag+"Type:ButtonBar"+closeTag+openTag+"Description:" + strTmp;
-        CStdString button;
-        button.Format("%d",((CGUIButtonScroller *)pControl)->GetActiveButton());
-        output += closeTag+openTag+"ActiveButton:" + button;
-      }
       else if (pControl->GetControlType() == CGUIControl::GUICONTROL_SPIN)
       {
         output += closeTag+openTag+"Type:Spin"+closeTag+openTag+"Description:" + strTmp;
@@ -2062,9 +2055,9 @@ CStdString CXbmcHttp::GetCloseTag()
 CKey CXbmcHttp::GetKey()
 {
   if (repeatKeyRate!=0)
-    if (CTimeUtils::GetTimeMS() >= MarkTime + repeatKeyRate)
+    if ((XbmcThreads::SystemClockMillis() - MarkTime) >=  repeatKeyRate)
     {
-      MarkTime=CTimeUtils::GetTimeMS();
+      MarkTime=XbmcThreads::SystemClockMillis();
       key=lastKey;
     }
   return key;

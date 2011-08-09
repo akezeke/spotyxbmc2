@@ -76,6 +76,10 @@ public:
    */
   void MarkDirty();
 
+  /*! \brief Get the current dirty region
+   */
+  CDirtyRegionList GetDirty() { return m_tracker.GetDirtyRegions(); }
+
   /*! \brief Rendering of the current window and any dialogs
    Render is called every frame to draw the current window and any dialogs.
    It should only be called from the application thread.
@@ -134,6 +138,7 @@ private:
   void HideOverlay(CGUIWindow::OVERLAY_STATE state);
   void AddToWindowHistory(int newWindowID);
   void ClearWindowHistory();
+  void CloseWindowSync(CGUIWindow *window, int nextWindowID = 0);
   CGUIWindow *GetTopMostDialog() const;
 
   friend class CApplicationMessenger;

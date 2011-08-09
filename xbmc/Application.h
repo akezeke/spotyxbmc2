@@ -27,6 +27,8 @@
 #include "guilib/IMsgTargetCallback.h"
 #include "threads/Condition.h"
 
+#include <map>
+
 class CFileItem;
 class CFileItemList;
 namespace ADDON
@@ -84,7 +86,7 @@ public:
   CApplication(void);
   virtual ~CApplication(void);
   virtual bool Initialize();
-  virtual void FrameMove();
+  virtual void FrameMove(bool processEvents);
   virtual void Render();
   virtual bool RenderNoPresent();
   virtual void Preflight();
@@ -385,6 +387,7 @@ protected:
 #ifdef HAS_EVENT_SERVER
   std::map<std::string, std::map<int, float> > m_lastAxisMap;
 #endif
+
 };
 
 extern CApplication g_application;

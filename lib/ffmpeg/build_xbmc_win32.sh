@@ -19,6 +19,9 @@ if [ ! -d .libs ]; then
   mkdir .libs
 fi
 
+# add --enable-debug (remove --disable-debug ofc) to get ffmpeg log messages in xbmc.log
+# the resulting debug dll's are twice to fourth time the size of the release binaries
+
 OPTIONS="
 --enable-shared \
 --enable-memalign-hack \
@@ -42,7 +45,6 @@ OPTIONS="
 --enable-encoder=aac \
 --enable-runtime-cpudetect \
 --enable-avfilter \
---disable-debug \
 --disable-doc"
 
 ./configure --extra-cflags="-fno-common -Iinclude-xbmc-win32/dxva2" --extra-ldflags="-L/xbmc/system/players/dvdplayer" ${OPTIONS} &&

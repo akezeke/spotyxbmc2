@@ -19,6 +19,7 @@
  *
  */
 
+#include "threads/SystemClock.h"
 #include "system.h"
 #include "DVDPlayer.h"
 
@@ -292,7 +293,7 @@ void CSelectionStreams::Update(CDVDInputStream* input, CDVDDemux* demuxer)
 
 CDVDPlayer::CDVDPlayer(IPlayerCallback& callback)
     : IPlayer(callback),
-      CThread(),
+      CThread("CDVDPlayer"),
       m_CurrentAudio(STREAM_AUDIO),
       m_CurrentVideo(STREAM_VIDEO),
       m_CurrentSubtitle(STREAM_SUBTITLE),
@@ -418,7 +419,6 @@ bool CDVDPlayer::IsPlaying() const
 
 void CDVDPlayer::OnStartup()
 {
-  CThread::SetName("CDVDPlayer");
   m_CurrentVideo.Clear();
   m_CurrentAudio.Clear();
   m_CurrentSubtitle.Clear();
@@ -716,7 +716,7 @@ void CDVDPlayer::OpenDefaultStreams()
   if(!valid)
     CloseSubtitleStream(false);
 
-  if((g_settings.m_currentVideoSettings.m_SubtitleOn || force) && !m_PlayerOptions.video_only)
+  if(valid && (g_settings.m_currentVideoSettings.m_SubtitleOn || force) && !m_PlayerOptions.video_only)
     m_dvdPlayerVideo.EnableSubtitle(true);
   else
     m_dvdPlayerVideo.EnableSubtitle(false);
@@ -1088,7 +1088,7 @@ void CDVDPlayer::Process()
         {
           if (m_dvd.iDVDStillTime > 0)
           {
-            if (CTimeUtils::GetTimeMS() >= (m_dvd.iDVDStillStartTime + m_dvd.iDVDStillTime))
+            if ((XbmcThreads::SystemClockMillis() - m_dvd.iDVDStillStartTime) >= m_dvd.iDVDStillTime)
             {
               m_dvd.iDVDStillTime = 0;
               m_dvd.iDVDStillStartTime = 0;
@@ -3070,7 +3070,7 @@ int CDVDPlayer::OnDVDNavResult(void* pData, int iMessage)
           else
             m_dvd.iDVDStillTime = 0;
 
-          m_dvd.iDVDStillStartTime = CTimeUtils::GetTimeMS();
+          m_dvd.iDVDStillStartTime = XbmcThreads::SystemClockMillis();
 
           /* adjust for the output delay in the video queue */
           DWORD time = 0;
@@ -3660,7 +3660,7 @@ void CDVDPlayer::UpdatePlayState(double timeout)
     {
       if(m_dvd.state == DVDSTATE_STILL)
       {
-        m_State.time       = CTimeUtils::GetTimeMS() - m_dvd.iDVDStillStartTime;
+        m_State.time       = XbmcThreads::SystemClockMillis() - m_dvd.iDVDStillStartTime;
         m_State.time_total = m_dvd.iDVDStillTime;
       }
 
