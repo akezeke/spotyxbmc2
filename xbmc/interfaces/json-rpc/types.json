@@ -79,6 +79,7 @@
       { "type": "object", "properties": { "musicvideoid": { "$ref": "Library.Id", "required": true } }, "additionalProperties": false },
       { "type": "object", "properties": { "artistid": { "$ref": "Library.Id", "required": true } }, "additionalProperties": false },
       { "type": "object", "properties": { "albumid": { "$ref": "Library.Id", "required": true } }, "additionalProperties": false },
+      { "type": "object", "properties": { "spotify_albumid": { "type": "string", "required": true } }, "additionalProperties": false },
       { "type": "object", "properties": { "songid": { "$ref": "Library.Id", "required": true } }, "additionalProperties": false },
       { "type": "object", "properties": { "genreid": { "$ref": "Library.Id", "required": true, "description": "Identification of a genre from the AudioLibrary" } }, "additionalProperties": false }
     ]
@@ -339,6 +340,7 @@
     "extends": "Audio.Details.Media",
     "properties": {
       "albumid": { "$ref": "Library.Id", "required": true },
+      "spotify_albumid": { "type": "string" },
       "description": { "type": "string" },
       "theme": { "type": "string" },
       "mood": { "type": "string" },
@@ -363,6 +365,7 @@
       "musicbrainztrackid": { "type": "string" },
       "musicbrainzartistid": { "type": "string" },
       "artistid": { "$ref": "Library.Id" },
+      "spotify_albumid": { "type": "string" },
       "albumid": { "$ref": "Library.Id" }
     }
   },

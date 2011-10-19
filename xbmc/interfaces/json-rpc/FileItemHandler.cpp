@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+#include "music/spotyXBMC/Logger.h"
 #include "FileItemHandler.h"
 #include "PlaylistOperations.h"
 #include "AudioLibrary.h"
@@ -34,6 +35,7 @@
 #include "video/VideoDatabase.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+
 
 using namespace MUSIC_INFO;
 using namespace JSONRPC;
@@ -95,7 +97,6 @@ void CFileItemHandler::HandleFileItemList(const char *ID, bool allowFile, const 
   int end   = (int)parameterObject["limits"]["end"].asInteger();
   end = (end <= 0 || end > size) ? size : end;
   start = start > end ? end : start;
-
   Sort(items, parameterObject["sort"]);
 
   result["limits"]["start"] = start;
@@ -115,9 +116,9 @@ void CFileItemHandler::HandleFileItem(const char *ID, bool allowFile, const char
   CVariant object;
   bool hasFileField = false;
   bool hasThumbnailField = false;
-
   if (item.get())
   {
+  	
     for (unsigned int i = 0; i < validFields.size(); i++)
     {
       CStdString field = validFields[i].asString();
@@ -141,6 +142,11 @@ void CFileItemHandler::HandleFileItem(const char *ID, bool allowFile, const char
 
     if (ID)
     {
+  	  if(stricmp(ID, "spotify_albumid") == 0)
+  	  { 
+	 	CStdString spotify_albumid = item->GetPath();
+  	  	object[ID] = spotify_albumid.c_str();
+  	  }
       if (stricmp(ID, "genreid") == 0)
       {
         CStdString genre = item->GetPath();
