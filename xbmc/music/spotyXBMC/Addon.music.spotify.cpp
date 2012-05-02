@@ -254,7 +254,25 @@ bool Addon_music_spotify::GetTracks(CFileItemList& items, CStdString& path,
 	}
 	return true;
 }
-
+bool Addon_music_spotify::GetOneTrack(CFileItemList& items, CStdString& path) {
+	Logger::printOut("get one track");
+	CURL url(path);
+	CStdString uri = url.GetFileNameWithoutPath();
+	if (uri.Left(13).Equals("spotify:track")) {
+	    if (isReady()) {
+			sp_link *spLink = sp_link_create_from_string(uri.Left(uri.Find('.')));
+			if (!spLink) return false;
+			sp_track *spTrack = sp_link_as_track(spLink);
+			if (spTrack) {
+			    SxTrack* track = TrackStore::getInstance()->getTrack(spTrack);
+				items.Add(Utils::SxTrackToItem(track));
+				sp_track_release(spTrack);
+			}
+			sp_link_release(spLink);
+		} 
+	}
+	return true;	
+}
 bool Addon_music_spotify::getAlbumTracksFromTrack(CFileItemList& items,
 		CStdString& uri) {
 	if (isReady()) {
