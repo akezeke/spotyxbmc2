@@ -46,6 +46,8 @@ public:
   bool isReady();
 
   bool GetTracks(CFileItemList& items, CStdString& path, CStdString artistName, int albumId);
+  bool GetOneTrack(CFileItemList& items, CStdString& path);
+
   bool GetAlbums(CFileItemList& items, CStdString& path, CStdString artistName);
   bool GetArtists(CFileItemList& items, CStdString& path);
   bool GetPlaylists(CFileItemList& items);

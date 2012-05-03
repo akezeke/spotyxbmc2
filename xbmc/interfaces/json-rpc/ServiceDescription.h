@@ -108,6 +108,7 @@ namespace JSONRPC
         "{ \"type\": \"object\", \"properties\": { \"artistid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"albumid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"spotify_albumid\": { \"type\": \"string\", \"required\": true } }, \"additionalProperties\": false },"
+        "{ \"type\": \"object\", \"properties\": { \"spotify_songid\": { \"type\": \"string\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"songid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"genreid\": { \"$ref\": \"Library.Id\", \"required\": true, \"description\": \"Identification of a genre from the AudioLibrary\" } }, \"additionalProperties\": false }"
       "]"
@@ -394,6 +395,7 @@ namespace JSONRPC
         "\"musicbrainzartistid\": { \"type\": \"string\" },"
         "\"artistid\": { \"$ref\": \"Library.Id\" },"
         "\"spotify_albumid\": { \"type\": \"string\" },"
+        "\"spotify_songid\": { \"type\": \"string\" },"
         "\"albumid\": { \"$ref\": \"Library.Id\" }"
       "}"
     "}",
