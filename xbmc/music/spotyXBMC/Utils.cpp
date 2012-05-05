@@ -21,6 +21,7 @@
 
 #include "Utils.h"
 #include "SxSettings.h"
+#include "settings/AdvancedSettings.h"
 #include "Logger.h"
 #include "../tags/MusicInfoTag.h"
 #include "../Album.h"
@@ -31,6 +32,7 @@
 #include "filesystem/Directory.h"
 #include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
+#include "utils/StringUtils.h"
 
 namespace addon_music_spotify {
 
@@ -65,7 +67,7 @@ namespace addon_music_spotify {
     }
 
     CAlbum outAlbum;
-    outAlbum.strArtist = album->getAlbumArtistName();
+    outAlbum.artist =  StringUtils::Split(album->getAlbumArtistName(), g_advancedSettings.m_musicItemSeparator);
     CStdString title;
     if (discNumber != 0)
       title.Format("%s%s %s %i", prefix, album->getAlbumName(), "disc",
@@ -105,10 +107,10 @@ namespace addon_music_spotify {
     ratingStr.Format("%i", 1 + (track->getRating() / 2), ratingChar, 10);
     //delete ratingChar;
     outSong.rating = ratingStr[0];
-    outSong.strArtist = track->getArtistName();
+    outSong.artist =  StringUtils::Split(track->getArtistName(), g_advancedSettings.m_musicItemSeparator);
     outSong.iYear = track->getYear();
     outSong.strAlbum = track->getAlbumName();
-    outSong.strAlbumArtist = track->getAlbumArtistName();
+    outSong.albumArtist = StringUtils::Split(track->getAlbumArtistName(), g_advancedSettings.m_musicItemSeparator);
     const CFileItemPtr pItem(new CFileItem(outSong));
     if (track->hasThumb())
       pItem->SetThumbnailImage(track->getThumb()->getPath());

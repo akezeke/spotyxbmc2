@@ -21,9 +21,13 @@
 
 #pragma once
 
+#include <set>
 #include "utils/StdString.h"
 #include "utils/JobManager.h"
 #include "TextureDatabase.h"
+#include "threads/Event.h"
+
+class CBaseTexture;
 
 /*!
  \ingroup textures
@@ -56,14 +60,15 @@ public:
 
    Check and return URL to cached image if it exists; If not, return empty string.
    If the image is cached, return URL (for original image or .dds version if requested)
-   Created .dds of image if requested as per settings.
+   Creates a .dds of image if requested via returnDDS and the image doesn't need recaching.
 
    \param image url of the image to check
    \param returnDDS if we're allowed to return a DDS version, defaults to true
+   \param needsRecaching [out] whether the image needs recaching.
    \return cached url of this image
    \sa GetCachedImage
    */ 
-   CStdString CheckCachedImage(const CStdString &image, bool returnDDS = true);
+  CStdString CheckCachedImage(const CStdString &image, bool returnDDS, bool &needsRecaching);
 
   /*! \brief This function is a wrapper around CheckCacheImage and CacheImageFile.
   
@@ -77,16 +82,36 @@ public:
    */
   CStdString CheckAndCacheImage(const CStdString &image, bool returnDDS = true);
 
+  /*! \brief Cache image (if required) using a background job
+
+   Essentially a threaded version of CheckAndCacheImage.
+
+   \param image url of the image to cache
+   \sa CheckAndCacheImage
+   */
+  void BackgroundCacheImage(const CStdString &image);
+
+  /*! \brief Cache an image to image cache, optionally return the texture
+
+   Caches the given image, returning the texture if the caller wants it.
+
+   \param image url of the image to cache
+   \param texture [out] the loaded image
+   \return cached url of this image
+   \sa CTextureCacheJob::CacheTexture
+   */
+  CStdString CacheTexture(const CStdString &url, CBaseTexture **texture = NULL);
+
   /*! \brief Take image URL and add it to image cache
 
    Takes the URL to an image. Caches and adds to the database.
 
    \param image url of the image to cache
    \return cached url of this image
-   \sa CCacheJob::CacheImage
+   \sa CTextureCacheJob::DoWork
    */  
   CStdString CacheImageFile(const CStdString &url);
-  
+
   /*! \brief retrieve the cached version of the given image (if it exists)
    \param image url of the image
    \return cached url of this image, empty if none exists
@@ -100,9 +125,10 @@ public:
    */
   void ClearCachedImage(const CStdString &image, bool deleteSource = false);
 
-  /*! \brief retrieve the cache file to associate with the given image
+  /*! \brief retrieve a cache file (relative to the cache path) to associate with the given image, excluding extension
+   Use GetCachedPath(GetCacheFile(url)+extension) for the full path to the file.
    \param url location of the image
-   \return a "unique" filename for the associated cache file.
+   \return a "unique" filename for the associated cache file, excluding extension
    */
   static CStdString GetCacheFile(const CStdString &url);
 
@@ -112,10 +138,12 @@ public:
    */
   static CStdString GetCachedPath(const CStdString &file);
 
-  /*! \brief retrieve a wrapped URL for a thumb file
+  /*! \brief retrieve a wrapped URL for a image file
    \param image name of the file
-   \return full wrapped URL of the thumb file
+   \param type type of file containing the image (picture, video, music)
+   \return full wrapped URL of the image file
    */
+  static CStdString GetWrappedImageURL(const CStdString &image, const CStdString &type);
   static CStdString GetWrappedThumbURL(const CStdString &image);
 
   /*! \brief get a unique image path to associate with the given URL, useful for caching images
@@ -125,46 +153,21 @@ public:
    */
   static CStdString GetUniqueImage(const CStdString &url, const CStdString &extension);
 
+  /*! \brief Add this image to the database
+   Thread-safe wrapper of CTextureDatabase::AddCachedTexture
+   \param image url of the original image
+   \param details the texture details to add
+   \return true if we successfully added to the database, false otherwise.
+   */
+  bool AddCachedTexture(const CStdString &image, const CTextureDetails &details);
+
+  /*! \brief Export a (possibly) cached image to a file
+   \param image url of the original image
+   \param destination url of the destination image
+   \return true if we successfully exported the file, false otherwise.
+   */
+  bool Export(const CStdString &image, const CStdString &destination);
 private:
-  /* \brief Job class for creating .dds versions of textures
-   */
-  class CDDSJob : public CJob
-  {
-  public:
-    CDDSJob(const CStdString &original);
-
-    virtual const char* GetType() const { return "ddscompress"; };
-    virtual bool operator==(const CJob *job) const;
-    virtual bool DoWork();
-
-    CStdString m_original;
-  };
-
-  /*! \brief Job class for caching textures
-   */
-  class CCacheJob : public CJob
-  {
-  public:
-    CCacheJob(const CStdString &url, const CStdString &oldHash);
-
-    virtual const char* GetType() const { return "cacheimage"; };
-    virtual bool operator==(const CJob *job) const;
-    virtual bool DoWork();
-
-    /*! \brief Cache an image either full size or thumb sized
-     \param url URL of image to cache
-     \param original URL of cached version
-     \param oldHash hash of any previously cached version - if the hashes match, we don't cache the image
-     \return hash of the image that we cached, empty on failure
-     */
-    static CStdString CacheImage(const CStdString &url, const CStdString &original, const CStdString &oldHash = "");
-
-    CStdString m_url;
-    CStdString m_original;
-    CStdString m_hash;
-    CStdString m_oldHash;
-  };
-
   // private construction, and no assignements; use the provided singleton methods
   CTextureCache();
   CTextureCache(const CTextureCache&);
@@ -177,22 +180,21 @@ private:
    */
   bool IsCachedImage(const CStdString &image) const;
 
-  /*! \brief Add this image to the database
-   Thread-safe wrapper of CTextureDatabase::AddCachedTexture
-   \param image url of the original image
-   \param cacheFile url of the cached image
-   \param hash hash of the original image
-   \return true if we successfully added to the database, false otherwise.
+  /*! \brief retrieve the cached version of the given image (if it exists)
+   \param image url of the image
+   \param cacheHash [out] set to the hash of the cached image if it needs checking
+   \return cached url of this image, empty if none exists
+   \sa ClearCachedImage
    */
-  bool AddCachedTexture(const CStdString &image, const CStdString &cacheFile, const CStdString &hash);
+  CStdString GetCachedImage(const CStdString &image, CStdString &cacheHash);
 
   /*! \brief Get an image from the database
    Thread-safe wrapper of CTextureDatabase::GetCachedTexture
    \param image url of the original image
-   \param cacheFile [out] url of the cached original (if available)
+   \param details [out] texture details from the database (if available)
    \return true if we have a cached version of this image, false otherwise.
    */
-  bool GetCachedTexture(const CStdString &url, CStdString &cacheFile);
+  bool GetCachedTexture(const CStdString &url, CTextureDetails &details);
 
   /*! \brief Clear an image from the database
    Thread-safe wrapper of CTextureDatabase::ClearCachedTexture
@@ -202,16 +204,28 @@ private:
    */
   bool ClearCachedTexture(const CStdString &url, CStdString &cacheFile);
 
-  /*! \brief retrieve a hash for the given image
-   Combines the size, ctime and mtime of the image file into a "unique" hash
-   \param url location of the image
-   \return a hash string for this image
+  /*! \brief Increment the use count of a texture in the database
+   Thread-safe wrapper of CTextureDatabase::IncrementUseCount
+   \param details the texture to increment the use count
+   \return true on success, false otherwise
    */
-  CStdString GetImageHash(const CStdString &url) const;
+  bool IncrementUseCount(const CTextureDetails &details);
+
+  /*! \brief Set a previously cached texture as valid in the database
+   Thread-safe wrapper of CTextureDatabase::SetCachedTextureValid
+   \param image url of the original image
+   \param updateable whether this image should be checked for updates
+   \return true if successful, false otherwise.
+   */
+  bool SetCachedTextureValid(const CStdString &url, bool updateable);
 
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job);
 
   CCriticalSection m_databaseSection;
   CTextureDatabase m_database;
+  std::set<CStdString> m_processing; ///< currently processing list to avoid 2 jobs being processed at once
+  CCriticalSection     m_processingSection;
+  CEvent               m_completeEvent; ///< Set whenever a job has finished
 };
 

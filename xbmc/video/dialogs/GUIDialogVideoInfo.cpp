@@ -178,7 +178,8 @@ bool CGUIDialogVideoInfo::OnMessage(CGUIMessage& message)
       }
       else if (iControl == CONTROL_BTN_DIRECTOR)
       {
-        OnSearch(m_movieItem->GetVideoInfoTag()->m_strDirector);
+        CStdString strDirector = StringUtils::Join(m_movieItem->GetVideoInfoTag()->m_director, g_advancedSettings.m_videoItemSeparator);
+        OnSearch(strDirector);
       }
       else if (iControl == CONTROL_LIST)
       {
@@ -232,9 +233,8 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
   VIDEODB_CONTENT_TYPE type = (VIDEODB_CONTENT_TYPE)m_movieItem->GetVideoContentType();
   if (type == VIDEODB_CONTENT_MUSICVIDEOS)
   { // music video
-    CStdStringArray artists;
-    StringUtils::SplitString(m_movieItem->GetVideoInfoTag()->m_strArtist, g_advancedSettings.m_videoItemSeparator, artists);
-    for (std::vector<CStdString>::const_iterator it = artists.begin(); it != artists.end(); ++it)
+    const std::vector<std::string> &artists = m_movieItem->GetVideoInfoTag()->m_artist;
+    for (std::vector<std::string>::const_iterator it = artists.begin(); it != artists.end(); ++it)
     {
       CFileItemPtr item(new CFileItem(*it));
       if (CFile::Exists(item->GetCachedArtistThumb()))
@@ -271,7 +271,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
     {
       m_castList->SetContent("tvshows");
       // special case stuff for shows (not currently retrieved from the library in filemode (ref: GetTvShowInfo vs GetTVShowsByWhere)
-      m_movieItem->m_dateTime.SetFromDateString(m_movieItem->GetVideoInfoTag()->m_strPremiered);
+      m_movieItem->m_dateTime = m_movieItem->GetVideoInfoTag()->m_premiered;
       if(m_movieItem->GetVideoInfoTag()->m_iYear == 0 && m_movieItem->m_dateTime.IsValid())
         m_movieItem->GetVideoInfoTag()->m_iYear = m_movieItem->m_dateTime.GetYear();
       m_movieItem->SetProperty("totalepisodes", m_movieItem->GetVideoInfoTag()->m_iEpisode);
@@ -284,7 +284,7 @@ void CGUIDialogVideoInfo::SetMovie(const CFileItem *item)
     {
       m_castList->SetContent("episodes");
       // special case stuff for episodes (not currently retrieved from the library in filemode (ref: GetEpisodeInfo vs GetEpisodesByWhere)
-      m_movieItem->m_dateTime.SetFromDateString(m_movieItem->GetVideoInfoTag()->m_strFirstAired);
+      m_movieItem->m_dateTime = m_movieItem->GetVideoInfoTag()->m_firstAired;
       if(m_movieItem->GetVideoInfoTag()->m_iYear == 0 && m_movieItem->m_dateTime.IsValid())
         m_movieItem->GetVideoInfoTag()->m_iYear = m_movieItem->m_dateTime.GetYear();
       if (CFile::Exists(m_movieItem->GetCachedEpisodeThumb()))
@@ -353,7 +353,7 @@ void CGUIDialogVideoInfo::Update()
   {
     if (m_bViewReview)
     {
-      if (!m_movieItem->GetVideoInfoTag()->m_strArtist.IsEmpty())
+      if (!m_movieItem->GetVideoInfoTag()->m_artist.empty())
       {
         SET_CONTROL_LABEL(CONTROL_BTN_TRACKS, 133);
       }
@@ -539,7 +539,7 @@ void CGUIDialogVideoInfo::DoSearch(CStdString& strSearch, CFileItemList& items)
   db.GetMusicVideosByArtist(strSearch, movies);
   for (int i = 0; i < movies.Size(); ++i)
   {
-    CStdString label = movies[i]->GetVideoInfoTag()->m_strArtist + " - " + movies[i]->GetVideoInfoTag()->m_strTitle;
+    CStdString label = StringUtils::Join(movies[i]->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator) + " - " + movies[i]->GetVideoInfoTag()->m_strTitle;
     if (movies[i]->GetVideoInfoTag()->m_iYear > 0)
       label.AppendFormat(" (%i)", movies[i]->GetVideoInfoTag()->m_iYear);
     movies[i]->SetLabel(label);

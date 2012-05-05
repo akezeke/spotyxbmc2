@@ -20,8 +20,7 @@
  */
 
 #include "LangCodeExpander.h"
-#include "SectionLoader.h"
-#include "tinyXML/tinyxml.h"
+#include "utils/XBMCTinyXML.h"
 #include "utils/log.h" 
 
 #define MAKECODE(a, b, c, d)  ((((long)(a))<<24) | (((long)(b))<<16) | (((long)(c))<<8) | (long)(d))
@@ -223,33 +222,27 @@ bool CLangCodeExpander::LookupInDb(CStdString& desc, const CStdString& code)
   sCode.TrimRight();
   if(sCode.length() == 2)
   {
-    CSectionLoader::Load("LCODE");
     longcode = MAKECODE('\0', '\0', sCode[0], sCode[1]);
     for(unsigned int i = 0; i < sizeof(g_iso639_1) / sizeof(LCENTRY); i++)
     {
       if(g_iso639_1[i].code == longcode)
       {
         desc = g_iso639_1[i].name;
-        CSectionLoader::Unload("LCODE");
         return true;
       }
     }
-    CSectionLoader::Unload("LCODE");
   }
   else if(code.length() == 3)
   {
-    CSectionLoader::Load("LCODE");
     longcode = MAKECODE('\0', sCode[0], sCode[1], sCode[2]);
     for(unsigned int i = 0; i < sizeof(g_iso639_2) / sizeof(LCENTRY); i++)
     {
       if(g_iso639_2[i].code == longcode)
       {
         desc = g_iso639_2[i].name;
-        CSectionLoader::Unload("LCODE");
         return true;
       }
     }
-    CSectionLoader::Unload("LCODE");
   }
   return false;
 }

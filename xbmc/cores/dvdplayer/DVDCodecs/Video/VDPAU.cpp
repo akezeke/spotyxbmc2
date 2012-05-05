@@ -1197,14 +1197,12 @@ int CVDPAU::FFGetBuffer(AVCodecContext *avctx, AVFrame *pic)
 
   if(pic->reference)
   {
-    pic->age = pA->ip_age[0];
     pA->ip_age[0]= pA->ip_age[1]+1;
     pA->ip_age[1]= 1;
     pA->b_age++;
   }
   else
   {
-    pic->age = pA->b_age;
     pA->ip_age[0]++;
     pA->ip_age[1]++;
     pA->b_age = 1;
@@ -1551,7 +1549,7 @@ bool CVDPAU::GetPicture(AVCodecContext* avctx, AVFrame* frame, DVDVideoPicture* 
   if (m_mixerstep != 1)
     m_DVDVideoPics.pop();
 
-  picture->format = DVDVideoPicture::FMT_VDPAU;
+  picture->format = RENDER_FMT_VDPAU;
   picture->iFlags &= DVP_FLAG_DROPPED;
   picture->iWidth = OutWidth;
   picture->iHeight = OutHeight;

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([xbmc], [11.0], [http://trac.xbmc.org])
+AC_INIT([xbmc], [11.9.2], [http://trac.xbmc.org])
 AC_CONFIG_HEADERS([xbmc/config.h])
 AH_TOP([#pragma once])
 m4_include([m4/ax_python_devel.m4])
@@ -410,6 +410,18 @@ AC_ARG_ENABLE([libcec],
   [use_libcec=$enableval],
   [use_libcec=auto])
 
+AC_ARG_ENABLE([libmp3lame],
+  [AS_HELP_STRING([--enable-libmp3lame],
+  [enable lame mp3 encoder support (default is auto)])],
+  [use_libmp3lame=$enableval],
+  [use_libmp3lame=auto])
+
+AC_ARG_ENABLE([vorbisenc],
+  [AS_HELP_STRING([--enable-libvorbisenc],
+  [enable vorbis encoder support (default is auto)])],
+  [use_libvorbisenc=$enableval],
+  [use_libvorbisenc=auto])
+
 ### External libraries options
 AC_ARG_ENABLE([external-libraries],
   [AS_HELP_STRING([--enable-external-libraries],
@@ -473,7 +485,6 @@ case $host in
      fi
      ARCH="arm-osx"
      use_arch="arm"
-     AC_SUBST(ARCH_DEFINES, "-D_ARMEL")
      PYTHON_VERSION="2.6"
      PYTHON_LDFLAGS="-L${prefix}/lib -lpython2.6"
      PYTHON_CPPFLAGS="-I${prefix}/include/python2.6"
@@ -510,7 +521,7 @@ case $host in
      use_texturepacker=no
      ARCH="arm"
      use_arch="arm"
-     AC_SUBST(ARCH_DEFINES, "-DTARGET_POSIX -DTARGET_LINUX -D_LINUX -D_ARMEL")
+     AC_SUBST(ARCH_DEFINES, "-DTARGET_POSIX -DTARGET_LINUX -D_LINUX")
      ;;
   *)
      AC_MSG_ERROR(unsupported host ($host))
@@ -572,9 +583,9 @@ if test "$host_vendor" = "apple" ; then
     LIBS="$LIBS -framework ApplicationServices"
   fi
 elif test "$use_arch" = "arm"; then
-  CFLAGS="$CFLAGS -mfloat-abi=softfp -mno-apcs-stack-check"
-  CXXFLAGS="$CXXFLAGS -mfloat-abi=softfp -mno-apcs-stack-check"
-  FFMPEG_EXTRACFLAGS="-mfloat-abi=softfp"
+  CFLAGS="$CFLAGS -mno-apcs-stack-check"
+  CXXFLAGS="$CXXFLAGS -mno-apcs-stack-check"
+  FFMPEG_EXTRACFLAGS=""
   if test "$use_tegra" = "yes"; then
     # Compile for ARMv7a architecture, need to test gcc for vfpv3-d16 support 
     SAVE_CFLAGS="$CFLAGS"
@@ -589,9 +600,6 @@ elif test "$use_arch" = "arm"; then
         CXXFLAGS="$CXXFLAGS -Wa,-march=armv6 -mtune=cortex-a8 -mthumb-interwork"    
         use_cpu=cortex-a8])
   else
-    # Compile for ARMv7a architecture, CortexA8 cpu and check for enabled NEON coprocessor
-    CFLAGS="$CFLAGS -Wa,-march=armv7a -mcpu=cortex-a8"
-    CXXFLAGS="$CXXFLAGS -Wa,-march=armv7a -mcpu=cortex-a8"
     if test "$use_neon" = "yes"; then 
       CFLAGS="$CFLAGS -mfpu=neon -mvectorize-with-neon-quad"
       CXXFLAGS="$CXXFLAGS -mfpu=neon -mvectorize-with-neon-quad"
@@ -694,7 +702,6 @@ AC_CHECK_HEADER([jpeglib.h],,        AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([samplerate.h],,     AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([ogg/ogg.h],,        AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([vorbis/vorbisfile.h],, AC_MSG_ERROR($missing_library))
-AC_CHECK_HEADER([vorbis/vorbisenc.h],, AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([libmodplug/modplug.h],, AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([curl/curl.h],, AC_MSG_ERROR($missing_library))
 AC_CHECK_HEADER([FLAC/stream_decoder.h],, AC_MSG_ERROR($missing_library))
@@ -722,6 +729,7 @@ AC_CHECK_LIB([mysqlclient], [main],, AC_MSG_ERROR($missing_library))
 AC_CHECK_LIB([ssh],         [sftp_tell64],, AC_MSG_RESULT([Could not find suitable version of libssh]))
 AC_CHECK_LIB([bluetooth],   [hci_devid],, AC_MSG_RESULT([Could not find suitable version of libbluetooth]))
 AC_CHECK_LIB([yajl],        [main],, AC_MSG_ERROR($missing_library))
+AC_CHECK_LIB([tinyxml],     [main],, AC_MSG_ERROR($missing_library))
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig],
   [INCLUDES="$INCLUDES $FONTCONFIG_CFLAGS"; LIBS="$LIBS $FONTCONFIG_LIBS"],
@@ -756,10 +764,10 @@ PKG_CHECK_MODULES([FREETYPE2],  [freetype2],
 # check for libbluray
 AS_CASE([x$use_libbluray],
   [xyes],[
-    PKG_CHECK_MODULES([LIBBLURAY],[libbluray],[use_libbluray="yes"], AC_MSG_ERROR($missing_library))
+    PKG_CHECK_MODULES([LIBBLURAY],[libbluray >= 0.2.1],[use_libbluray="yes"], AC_MSG_ERROR($missing_library))
   ],
   [xauto],[
-    PKG_CHECK_MODULES([LIBBLURAY],[libbluray],[use_libbluray="yes"], [use_libbluray="no"])
+    PKG_CHECK_MODULES([LIBBLURAY],[libbluray >= 0.2.1],[use_libbluray="yes"], [use_libbluray="no"])
   ])
 
 AS_CASE([x$use_libbluray],
@@ -768,34 +776,7 @@ AS_CASE([x$use_libbluray],
     XB_FIND_SONAME([BLURAY], [bluray], [use_libbluray])
     AC_DEFINE([HAVE_LIBBLURAY], 1, [System has libbluray library])
     AC_SUBST([HAVE_LIBBLURAY], 1)
-
-	XB_PUSH_FLAGS(
-        [$LIBBLURAY_CFLAGS]
-      , [$LIBBLURAY_LIBS]
-
-      , AC_MSG_CHECKING([libbluray version])
-        AC_COMPILE_IFELSE(
-            [AC_LANG_PROGRAM(
-                [#include <libbluray/bluray.h>]
-               ,[bd_get_playlist_info(0, 0)])]
-          ,[AC_MSG_RESULT(version has old angle api)
-            AC_DEFINE([HAVE_LIBBLURAY_NOANGLE],[],[System has an old api libbluray without angle support])]
-          ,[AC_MSG_RESULT(normal)]
-        )
-
-        AC_MSG_CHECKING([for libbluray log control])
-        AC_LINK_IFELSE(
-            [AC_LANG_PROGRAM(
-               [#include <libbluray/bluray.h>
-                #include <libbluray/log_control.h>]
-              ,[bd_set_debug_mask(0)])]
-          , AC_MSG_RESULT(yes)
-          ,[AC_MSG_RESULT(no)
-            AC_DEFINE([HAVE_LIBBLURAY_NOLOGCONTROL],[],[System has an old api libbluray without log support])]
-        )
-    )
   ],[
-#    AC_DEFINE([HAVE_LIBBLURAY], 0, [System has libbluray library])
     AC_SUBST([HAVE_LIBBLURAY], 0)
   ]
 )
@@ -809,7 +790,9 @@ if test "$host_vendor" = "apple" ; then
     AC_DEFINE([HAVE_SDL],[1],["Define to 1 if using sdl"])
   fi
 else
-  AC_CHECK_LIB([dl],         [main],, AC_MSG_ERROR($missing_library))
+  case $host_os in
+    linux*) AC_CHECK_LIB([dl], [main],, AC_MSG_ERROR($missing_library)) ;;
+  esac
   AC_CHECK_LIB([resolv],     [main],, AC_MSG_ERROR($missing_library))
   AC_CHECK_LIB([jasper],     [main],, AC_MSG_ERROR($missing_library)) # check for cximage
   AC_CHECK_LIB([rt],         [clock_gettime],, AC_MSG_ERROR($missing_library))
@@ -837,11 +820,41 @@ XB_FIND_SONAME([OGG],         [ogg])
 XB_FIND_SONAME([CURL],        [curl])
 XB_FIND_SONAME([FLAC],        [FLAC])
 XB_FIND_SONAME([VORBIS],      [vorbis])
-XB_FIND_SONAME([VORBISENC],   [vorbisenc])
 XB_FIND_SONAME([VORBISFILE],  [vorbisfile])
 XB_FIND_SONAME([MODPLUG],     [modplug])
 XB_FIND_SONAME([ASS],         [ass])
 XB_FIND_SONAME([MPEG2],       [mpeg2])
+
+# Audio encoders
+if test "x$use_libmp3lame" != "xno"; then
+  XB_FIND_SONAME([LAMEENC], [mp3lame], [use_libmp3lame])
+  if test "x$use_libmp3lame" != "xno"; then
+    AC_CHECK_HEADER([lame/lame.h],, AC_MSG_ERROR($missing_headers))
+  fi
+fi
+AS_CASE([x$use_libmp3lame],
+  [xno],[
+    AC_SUBST([HAVE_LIBMP3LAME], 0)
+  ],
+  [
+    AC_DEFINE([HAVE_LIBMP3LAME], 1, [System has libmp3lame library])
+    AC_SUBST([HAVE_LIBMP3LAME], 1)
+  ]
+)
+if test "x$use_libvorbisenc" != "xno"; then
+  XB_FIND_SONAME([VORBISENC], [vorbisenc], [use_libvorbisenc])
+  if test "x$use_libvorbisenc" != "xno"; then
+    AC_CHECK_HEADER([vorbis/vorbisenc.h],, AC_MSG_ERROR($missing_headers))
+  fi
+fi
+AS_CASE([x$use_libvorbisenc],
+  [xno],[
+    AC_SUBST([HAVE_LIBVORBISENC], 0)
+  ],[
+    AC_DEFINE([HAVE_LIBVORBISENC], 1, [System has libvorbisenc library])
+    AC_SUBST([HAVE_LIBVORBISENC], 1)
+  ]
+)
 
 # WebServer
 if test "$use_webserver" = "yes"; then
@@ -1224,6 +1237,9 @@ if test "$use_external_ffmpeg" = "yes"; then
 
   # old FFmpeg have this in libavcodec/opt.h instead:
   AC_CHECK_HEADERS([libavutil/opt.h])
+
+  # new FFmpeg have math headers
+  AC_CHECK_HEADERS([libavutil/mathematics.h],,)
 
   # We'll support the use of rgb2rgb.h if it exists.
   AC_CHECK_HEADERS([libswscale/rgb2rgb.h],,)
@@ -1771,8 +1787,10 @@ fi
 
 if test "$use_webserver" = "yes"; then
   final_message="$final_message\n  Webserver:\tYes"
+  USE_WEB_SERVER=1
 else
   final_message="$final_message\n  Webserver:\tNo"
+  USE_WEB_SERVER=0
 fi
 
 if test "$use_librtmp" != "no"; then
@@ -1833,6 +1851,18 @@ if test "x$use_libcec" != "xno"; then
   final_message="$final_message\n  libcec support:\tYes"
 else
   final_message="$final_message\n  libcec support:\tNo"
+fi
+
+if test "x$use_libmp3lame" != "xno"; then
+  final_message="$final_message\n  libmp3lame support:\tYes"
+else
+  final_message="$final_message\n  libmp3lame support:\tNo"
+fi
+
+if test "x$use_libvorbisenc" != "xno"; then
+  final_message="$final_message\n  libvorbisenc support:\tYes"
+else
+  final_message="$final_message\n  libvorbisenc support:\tNo"
 fi
 
 ### External libraries messages
@@ -1962,6 +1992,7 @@ AC_SUBST(USE_AIRTUNES)
 AC_SUBST(USE_LIBUDEV)
 AC_SUBST(USE_LIBUSB)
 AC_SUBST(USE_LIBCEC)
+AC_SUBST(USE_WEB_SERVER)
 
 
 # pushd and popd are not available in other shells besides bash, so implement
@@ -2027,7 +2058,7 @@ XB_CONFIG_MODULE([lib/ffmpeg], [
       --disable-amd3dnow \
       --disable-armv5te \
       --disable-armv6t2 \
-      --disable-static \
+      --enable-static \
       `if test "$use_debug" = "no"; then echo --disable-debug; fi` \
       --disable-muxers \
       --enable-muxer=spdif \
@@ -2041,9 +2072,9 @@ XB_CONFIG_MODULE([lib/ffmpeg], [
       --disable-ffplay \
       --disable-ffserver \
       --disable-ffmpeg \
-      --enable-shared \
       --disable-doc \
       --disable-decoder=mpeg_xvmc \
+      --disable-crystalhd \
       --enable-postproc \
       --enable-gpl \
       --enable-protocol=http \
@@ -2082,6 +2113,7 @@ XB_CONFIG_MODULE([lib/ffmpeg], [
       --disable-ffplay \
       --disable-ffserver \
       --disable-ffmpeg \
+      --disable-crystalhd \
       --enable-shared \
       --disable-doc \
       --enable-postproc \

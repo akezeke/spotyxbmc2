@@ -53,7 +53,7 @@
 #include "utils/URIUtils.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
-#include "filesystem/FactoryFileDirectory.h"
+#include "filesystem/FileDirectoryFactory.h"
 #include "utils/log.h"
 #include "utils/FileUtils.h"
 #include "guilib/GUIEditControl.h"
@@ -364,13 +364,18 @@ bool CGUIMediaWindow::OnMessage(CGUIMessage& message)
       {
         if (message.GetNumStringParams())
         {
-          m_vecItems->SetPath(message.GetStringParam());
           if (message.GetParam2()) // param2 is used for resetting the history
-            SetHistoryForPath(m_vecItems->GetPath());
+            SetHistoryForPath(message.GetStringParam());
+
+          CFileItemList list(message.GetStringParam());
+          list.RemoveDiscCache(GetID());
+          Update(message.GetStringParam());
         }
-        // clear any cached listing
-        m_vecItems->RemoveDiscCache(GetID());
-        Update(m_vecItems->GetPath());
+        else
+        { // refresh the listing
+          m_vecItems->RemoveDiscCache(GetID());
+          Update(m_vecItems->GetPath());
+        }
       }
       else if (message.GetParam1()==GUI_MSG_UPDATE_ITEM && message.GetItem())
       {
@@ -878,7 +883,7 @@ bool CGUIMediaWindow::OnClick(int iItem)
   if (!pItem->m_bIsFolder && pItem->IsFileFolder())
   {
     XFILE::IFileDirectory *pFileDirectory = NULL;
-    pFileDirectory = XFILE::CFactoryFileDirectory::Create(pItem->GetPath(), pItem.get(), "");
+    pFileDirectory = XFILE::CFileDirectoryFactory::Create(pItem->GetPath(), pItem.get(), "");
     if(pFileDirectory)
       pItem->m_bIsFolder = true;
     else if(pItem->m_bIsFolder)

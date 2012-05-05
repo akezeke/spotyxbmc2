@@ -39,6 +39,7 @@ SRCS=AlarmClock.cpp \
      PCMRemap.cpp \
      PerformanceSample.cpp \
      PerformanceStats.cpp \
+     POUtils.cpp \
      RecentlyAddedJob.cpp \
      RegExp.cpp \
      RingBuffer.cpp \
@@ -59,6 +60,7 @@ SRCS=AlarmClock.cpp \
      Variant.cpp \
      Weather.cpp \
      Win32Exception.cpp \
+     XBMCTinyXML.cpp \
      XMLUtils.cpp \
 
 LIB=utils.a

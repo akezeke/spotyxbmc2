@@ -311,7 +311,7 @@ CStdString CNetworkLinux::GetMacAddress(CStdString interfaceName)
 
         if( dlAddr->sdl_alen > 5 )
         {
-          result.Format("%hhX:%hhX:%hhX:%hhX:%hhX:%hhX",
+          result.Format("%02X:%02X:%02X:%02X:%02X:%02X",
              base[0],
              base[1],
              base[2],
@@ -332,13 +332,13 @@ CStdString CNetworkLinux::GetMacAddress(CStdString interfaceName)
    strcpy(ifr.ifr_name, interfaceName.c_str());
    if (ioctl(GetSocket(), SIOCGIFHWADDR, &ifr) >= 0)
    {
-      result.Format("%hhX:%hhX:%hhX:%hhX:%hhX:%hhX",
-         ifr.ifr_hwaddr.sa_data[0],
-         ifr.ifr_hwaddr.sa_data[1],
-         ifr.ifr_hwaddr.sa_data[2],
-         ifr.ifr_hwaddr.sa_data[3],
-         ifr.ifr_hwaddr.sa_data[4],
-         ifr.ifr_hwaddr.sa_data[5]);
+      result.Format("%02X:%02X:%02X:%02X:%02X:%02X",
+         (unsigned char)ifr.ifr_hwaddr.sa_data[0],
+         (unsigned char)ifr.ifr_hwaddr.sa_data[1],
+         (unsigned char)ifr.ifr_hwaddr.sa_data[2],
+         (unsigned char)ifr.ifr_hwaddr.sa_data[3],
+         (unsigned char)ifr.ifr_hwaddr.sa_data[4],
+         (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
    }
 #endif
 

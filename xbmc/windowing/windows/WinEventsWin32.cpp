@@ -43,6 +43,8 @@
 #include "settings/AdvancedSettings.h"
 #include "peripherals/Peripherals.h"
 #include "utils/JobManager.h"
+#include "network/Zeroconf.h"
+#include "network/ZeroconfBrowser.h"
 
 #ifdef _WIN32
 
@@ -703,6 +705,12 @@ LRESULT CALLBACK CWinEventsWin32::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
     case WM_PAINT:
       //some other app has painted over our window, mark everything as dirty
       g_windowManager.MarkDirty();
+      break;
+    case BONJOUR_EVENT:
+      CZeroconf::GetInstance()->ProcessResults();
+      break;
+    case BONJOUR_BROWSER_EVENT:
+      CZeroconfBrowser::GetInstance()->ProcessResults();
       break;
   }
   return(DefWindowProc(hWnd, uMsg, wParam, lParam));

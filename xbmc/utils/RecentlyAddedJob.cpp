@@ -31,6 +31,8 @@
 #include "music/tags/MusicInfoTag.h"
 #include "settings/Settings.h"
 #include "utils/Variant.h"
+#include "utils/StringUtils.h"
+#include "settings/AdvancedSettings.h"
 
 #define NUM_ITEMS 10
 
@@ -174,7 +176,7 @@ bool CRecentlyAddedJob::UpdateVideo()
       home->SetProperty("LatestMusicVideo." + value + ".Plot"        , item->GetVideoInfoTag()->m_strPlot);
       home->SetProperty("LatestMusicVideo." + value + ".RunningTime" , item->GetVideoInfoTag()->m_strRuntime);
       home->SetProperty("LatestMusicVideo." + value + ".Path"        , item->GetVideoInfoTag()->m_strFileNameAndPath);
-      home->SetProperty("LatestMusicVideo." + value + ".Artist"      , item->GetVideoInfoTag()->m_strArtist);
+      home->SetProperty("LatestMusicVideo." + value + ".Artist"      , StringUtils::Join(item->GetVideoInfoTag()->m_artist, g_advancedSettings.m_videoItemSeparator));
 
       if (!item->HasThumbnail())
         m_thumbLoader.LoadItem(item.get());
@@ -227,7 +229,7 @@ bool CRecentlyAddedJob::UpdateMusic()
       CStdString   strThumb;
       CStdString   strRating;
       CStdString   strAlbum  = item->GetMusicInfoTag()->GetAlbum();
-      CStdString   strArtist = item->GetMusicInfoTag()->GetArtist();
+      CStdString   strArtist = StringUtils::Join(item->GetMusicInfoTag()->GetArtist(), g_advancedSettings.m_musicItemSeparator);
       
       long idAlbum = musicdatabase.GetAlbumByName(strAlbum,strArtist);
       if (idAlbum != -1)
