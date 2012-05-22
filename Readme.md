@@ -1,6 +1,6 @@
 SPOTYXBMC2
 ==========
-This is a rewrite of the s potyxbmc project, the code is cleaner and better encapsulated from XBMC. It is now being prepared to be lifted out to a binary addon.
+This is a rewrite of the spotyxbmc project, the code is cleaner and better encapsulated from XBMC. It is now being prepared to be lifted out to a binary addon.
 The code is not heavily tested and has known issues, don´t install if you don´t know what you are doing.
 
 The main discussion for spotyxbmc is [here](http://forum.xbmc.org/showthread.php?t=67012)
