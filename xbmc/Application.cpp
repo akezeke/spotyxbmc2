@@ -17,7 +17,8 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-
+//spotify
+#include "music/spotyXBMC/Addon.music.spotify.h"
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "Application.h"
@@ -1353,16 +1354,8 @@ bool CApplication::Initialize()
       CJSONRPC::Initialize();
 #endif
       ADDON::CAddonMgr::Get().StartServices(false);
-      if (g_SkinInfo->GetFirstWindow() == WINDOW_PVR)
-      {
-        g_windowManager.ActivateWindow(WINDOW_HOME);
-        StartPVRManager(true);
-      }
-      else
-      {
-        StartPVRManager(false);
-        g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
-      }
+      StartPVRManager();
+      g_windowManager.ActivateWindow(g_SkinInfo->GetFirstWindow());
     }
 
   }
@@ -1374,6 +1367,8 @@ bool CApplication::Initialize()
     ADDON::CAddonMgr::Get().StartServices(false);
   }
 
+  //spotify
+  g_spotify = new Addon_music_spotify();
   g_sysinfo.Refresh();
 
   CLog::Log(LOGINFO, "removing tempfiles");
@@ -1801,10 +1796,10 @@ void CApplication::StopZeroconf()
 #endif
 }
 
-void CApplication::StartPVRManager(bool bOpenPVRWindow /* = false */)
+void CApplication::StartPVRManager()
 {
   if (g_guiSettings.GetBool("pvrmanager.enabled"))
-    g_PVRManager.Start(true, bOpenPVRWindow);
+    g_PVRManager.Start(true);
 }
 
 void CApplication::StopPVRManager()
@@ -3314,6 +3309,8 @@ bool CApplication::Cleanup()
 {
   try
   {
+  //spotify
+  g_spotify = new Addon_music_spotify();
     g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST);
     g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST_EDITOR);
     g_windowManager.Delete(WINDOW_MUSIC_FILES);

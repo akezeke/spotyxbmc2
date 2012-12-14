@@ -280,6 +280,9 @@
     <Filter Include="interfaces\python\test">
       <UniqueIdentifier>{0a84b5ee-2ad4-4ae2-9a8d-fc585c6d8aae}</UniqueIdentifier>
     </Filter>
+ <Filter Include="music\spotxbmc">
+      <UniqueIdentifier>{969dcb2c-4b2c-42c6-a4fa-676c6c49ec61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xbmc\win32\pch.cpp">
@@ -2953,6 +2956,99 @@
     </ClCompile>
     <ClCompile Include="..\..\xbmc\interfaces\python\PyContext.cpp">
       <Filter>interfaces\python</Filter>
+    </ClCompile>
+<ClCompile Include="..\..\xbmc\music\spotyXBMC\Utils.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\Addon.music.spotify.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\Logger.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\SxSettings.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\album\AlbumContainer.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\album\AlbumStore.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\album\SxAlbum.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\artist\ArtistContainer.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\artist\ArtistStore.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\artist\SxArtist.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\player\Codec.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\player\PlayerHandler.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\playlist\PlaylistStore.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\playlist\StarredBackgroundLoader.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\playlist\StarredList.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\playlist\SxPlaylist.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\playlist\TopLists.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\radio\RadioBackgroundLoader.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\radio\RadioHandler.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\radio\SxRadio.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\search\Search.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\search\SearchHandler.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\search\SearchResultBackgroundLoader.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\session\BackgroundThread.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\session\Session.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\session\SessionCallbacks.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\thumb\SxThumb.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\thumb\ThumbStore.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\track\SxTrack.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\track\TrackContainer.cpp">
+      <Filter>music\spotxbmc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\xbmc\music\spotyXBMC\track\TrackStore.cpp">
+      <Filter>music\spotxbmc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -5769,6 +5865,99 @@
     </ClInclude>
     <ClInclude Include="..\..\xbmc\interfaces\python\PyContext.h">
       <Filter>interfaces\python</Filter>
+    </ClInclude>
+  <ClInclude Include="..\..\xbmc\music\spotyXBMC\Utils.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\Addon.music.spotify.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\Logger.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\SxSettings.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\album\AlbumContainer.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\album\AlbumStore.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\album\SxAlbum.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\artist\ArtistContainer.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\artist\ArtistStore.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\artist\SxArtist.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\player\Codec.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\player\PlayerHandler.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\playlist\PlaylistStore.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\playlist\StarredBackgroundLoader.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\playlist\StarredList.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\playlist\SxPlaylist.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\playlist\TopLists.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\radio\RadioBackgroundLoader.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\radio\RadioHandler.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\radio\SxRadio.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\search\Search.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\search\SearchHandler.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\search\SearchResultBackgroundLoader.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\session\BackgroundThread.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\session\Session.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\session\SessionCallbacks.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\thumb\SxThumb.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\thumb\ThumbStore.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\track\SxTrack.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\track\TrackContainer.h">
+      <Filter>music\spotxbmc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\xbmc\music\spotyXBMC\track\TrackStore.h">
+      <Filter>music\spotxbmc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
