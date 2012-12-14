@@ -56,7 +56,7 @@ bool CDirectoryNodeAlbum::GetContent(CFileItemList& items) const
   CQueryParams params;
   CollectQueryParams(params);
   CStdString strBaseDir = BuildPath();
-  CURL url(strBaseDir)
+  CURL url(strBaseDir);
 
   bool bSuccess=musicdatabase.GetAlbumsNav(BuildPath(), items, params.GetGenreId(), params.GetArtistId());
 
