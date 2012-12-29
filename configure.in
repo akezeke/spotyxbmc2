@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([xbmc], [12.0rc1], [http://trac.xbmc.org])
+AC_INIT([xbmc], [12.0rc2], [http://trac.xbmc.org])
 AC_CONFIG_HEADERS([xbmc/config.h])
 AH_TOP([#pragma once])
 m4_include([m4/ax_python_devel.m4])
@@ -2723,7 +2723,7 @@ XB_CONFIG_MODULE([xbmc/screensavers/rsxs-0.9/], [
     CXX="$CXX" \
     CFLAGS="$TEMPCFLAGS" \ 
     CXXFLAGS="$CXXFLAGS" \
-    `if test "$host_vendor" = "apple"; then echo --x-includes=/usr/X11/include --x-libraries=/usr/X11/lib; fi` \
+    `if test "$host_vendor" = "apple"; then echo --with-png=${prefix} --x-includes=/usr/X11/include --x-libraries=/usr/X11/lib; fi` \
     --prefix="${prefix}" --includedir="${includedir}" --libdir="${libdir}" --datadir="${datadir}" \
     --host=$host_alias \
     --build=$build_alias \

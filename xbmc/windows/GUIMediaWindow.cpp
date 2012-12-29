@@ -1355,6 +1355,13 @@ void CGUIMediaWindow::SetHistoryForPath(const CStdString& strDirectory)
         }
       }
 
+      if (URIUtils::IsVideoDb(strPath))
+      {
+        CURL url(strParentPath);
+        url.SetOptions(""); // clear any URL options from recreated parent path
+        strParentPath = url.Get();
+      }
+
       URIUtils::AddSlashAtEnd(strPath);
       m_history.AddPathFront(strPath);
       m_history.SetSelectedItem(strPath, strParentPath);
@@ -1415,7 +1422,7 @@ bool CGUIMediaWindow::OnPlayAndQueueMedia(const CFileItemPtr &item)
       if (!nItem->IsPlayList() && !nItem->IsZIP() && !nItem->IsRAR())
         g_playlistPlayer.Add(iPlaylist, nItem);
 
-      if (nItem == item)
+      if (item->IsSamePath(nItem.get()))
       { // item that was clicked
         mediaToPlay = g_playlistPlayer.GetPlaylist(iPlaylist).size() - 1;
       }

@@ -88,9 +88,9 @@ XBPyThread::~XBPyThread()
 {
   stop();
   g_pythonParser.PulseGlobalEvent();
-  CLog::Log(LOGDEBUG,"waiting for python thread %d to stop", m_id);
+  CLog::Log(LOGDEBUG,"waiting for python thread %d (%s) to stop", m_id, (m_source ? m_source : "unknown script"));
   StopThread();
-  CLog::Log(LOGDEBUG,"python thread %d destructed", m_id);
+  CLog::Log(LOGDEBUG,"python thread %d (%s) destructed", m_id, (m_source ? m_source : "unknown script"));
   delete [] m_source;
   if (m_argv)
   {
@@ -98,10 +98,13 @@ XBPyThread::~XBPyThread()
       delete [] m_argv[i];
     delete [] m_argv;
   }
+  g_pythonParser.FinalizeScript();
 }
 
 void XBPyThread::setSource(const CStdString &src)
 {
+  if (m_source) 
+    delete [] m_source;
 #ifdef TARGET_WINDOWS
   CStdString strsrc;
   if (m_type == 'F')
@@ -143,6 +146,27 @@ int XBPyThread::setArgv(const std::vector<CStdString> &argv)
     strcpy(m_argv[i], argv[i].c_str());
   }
   return 0;
+}
+
+#define GC_SCRIPT \
+  "import gc\n" \
+  "gc.collect(2)\n"
+
+static const CStdString getListOfAddonClassesAsString(XBMCAddon::AddonClass::Ref<XBMCAddon::Python::LanguageHook>& languageHook)
+{
+  CStdString message;
+  XBMCAddon::AddonClass::Synchronize l(*(languageHook.get()));
+  std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
+  bool firstTime = true;
+  for (std::set<XBMCAddon::AddonClass*>::iterator iter = acs.begin();
+       iter != acs.end(); iter++)
+  {
+    if (!firstTime) message += ",";
+    else firstTime = false;
+    message += (*iter)->GetClassname().c_str();
+  }
+
+  return message;
 }
 
 void XBPyThread::Process()
@@ -376,58 +400,23 @@ void XBPyThread::Process()
 
   m_pExecuter->DeInitializeInterpreter();
 
+  // run the gc before finishing
+  if (!m_stopping && languageHook->HasRegisteredAddonClasses() && PyRun_SimpleString(GC_SCRIPT) == -1)
+    CLog::Log(LOGERROR,"Failed to run the gc to clean up after running prior to shutting down the Interpreter %s",m_source);
+
   Py_EndInterpreter(state);
 
-  // This is a total hack. Python doesn't necessarily release
-  // all of the objects associated with the interpreter when
-  // you end the interpreter. As a result there are objects 
-  // managed by the windowing system that still receive events
-  // until python decides to clean them up. Python will eventually
-  // clean them up on the creation or ending of a subsequent
-  // interpreter. So we are going to keep creating and ending
-  // interpreters until we have no more python objects hanging
-  // around.
-  int countLimit;
-  for (countLimit = 0; languageHook->HasRegisteredAddonClasses() && countLimit < 10; countLimit++)
-  {
-    PyThreadState* tmpstate = Py_NewInterpreter();
-    Py_EndInterpreter(tmpstate);
-  }
-
-  // If necessary and successfull, debug log the results.
-  if (countLimit > 0 && !languageHook->HasRegisteredAddonClasses())
-    CLog::Log(LOGDEBUG,"It took %d Py_NewInterpreter/Py_EndInterpreter calls"
-              " to clean up the classes leftover from running \"%s.\"",
-              countLimit,m_source);
-
-  // If not successful, produce an error message detailing what's been left behind
+  // If we still have objects left around, produce an error message detailing what's been left behind
   if (languageHook->HasRegisteredAddonClasses())
-  {
-    CStdString message;
-    message.Format("The python script \"%s\" has left several "
-                   "classes in memory that should have been cleaned up. The classes include: ",
-                   m_source);
-
-    { XBMCAddon::AddonClass::Synchronize l(*(languageHook.get()));
-      std::set<XBMCAddon::AddonClass*>& acs = languageHook->GetRegisteredAddonClasses();
-      bool firstTime = true;
-      for (std::set<XBMCAddon::AddonClass*>::iterator iter = acs.begin();
-           iter != acs.end(); iter++)
-      {
-        if (!firstTime) message += ",";
-        else firstTime = false;
-        message += (*iter)->GetClassname().c_str();
-      }
-    }
-    
-    CLog::Log(LOGERROR, "%s", message.c_str());
-  }
+    CLog::Log(LOGWARNING, "The python script \"%s\" has left several "
+              "classes in memory that we couldn't clean up. The classes include: %s",
+              m_source, getListOfAddonClassesAsString(languageHook).c_str());
 
   // unregister the language hook
   languageHook->UnregisterMe();
 
-  PyThreadState_Swap(NULL);
   PyEval_ReleaseLock();
+
 }
 
 void XBPyThread::OnExit()
@@ -481,7 +470,7 @@ void XBPyThread::stop()
     {
       if (timeout.IsTimePast())
       {
-        CLog::Log(LOGERROR, "XBPyThread::stop - script didn't stop in %d seconds - let's kill it", PYTHON_SCRIPT_TIMEOUT / 1000);
+        CLog::Log(LOGERROR, "XBPyThread::stop - script %s didn't stop in %d seconds - let's kill it", m_source, PYTHON_SCRIPT_TIMEOUT / 1000);
         break;
       }
       // We can't empty-spin in the main thread and expect scripts to be able to

@@ -100,6 +100,7 @@ void CEpgContainer::Clear(bool bClearDb /* = false */)
     m_epgs.clear();
     m_iNextEpgUpdate  = 0;
     m_bIsInitialising = true;
+    m_iNextEpgId = 0;
   }
 
   /* clear the database entries */
@@ -173,6 +174,8 @@ void CEpgContainer::LoadFromDB(void)
 
   if (!m_database.IsOpen())
     m_database.Open();
+
+  m_iNextEpgId = m_database.GetLastEPGId();
 
   bool bLoaded(true);
   unsigned int iCounter(0);
@@ -292,14 +295,20 @@ CEpg *CEpgContainer::GetByChannel(const CPVRChannel &channel) const
 
 void CEpgContainer::InsertFromDatabase(int iEpgID, const CStdString &strName, const CStdString &strScraperName)
 {
+  // table might already have been created when pvr channels were loaded
   CEpg* epg = GetById(iEpgID);
   if (epg)
   {
     if (!epg->Name().Equals(strName) || !epg->ScraperName().Equals(strScraperName))
+    {
+      // current table data differs from the info in the db
+      epg->SetChanged();
       SetChanged();
+    }
   }
   else
   {
+    // create a new epg table
     epg = new CEpg(iEpgID, strName, strScraperName, true);
     if (epg)
     {
@@ -510,6 +519,18 @@ bool CEpgContainer::UpdateEPG(bool bOnlyPending /* = false */)
 
     if (bShowProgress && !bOnlyPending)
       UpdateProgressDialog(++iCounter, m_epgs.size(), epg->Name());
+
+    // we currently only support update via pvr add-ons. skip update when the pvr manager isn't started
+    if (!g_PVRManager.IsStarted())
+      continue;
+
+    // check the pvr manager when the channel pointer isn't set
+    if (!epg->Channel())
+    {
+      CPVRChannelPtr channel = g_PVRChannelGroups->GetChannelByEpgId(epg->EpgID());
+      if (channel)
+        epg->SetChannel(channel);
+    }
 
     if ((!bOnlyPending || epg->UpdatePending()) && epg->Update(start, end, m_iUpdateTime, bOnlyPending))
       iUpdatedTables++;

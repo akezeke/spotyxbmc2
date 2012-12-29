@@ -62,6 +62,16 @@ CPVRClients::~CPVRClients(void)
   Unload();
 }
 
+bool CPVRClients::IsInUse(const std::string& strAddonId) const
+{
+  CSingleLock lock(m_critSection);
+
+  for (PVR_CLIENTMAP_CITR itr = m_clientMap.begin(); itr != m_clientMap.end(); itr++)
+    if (itr->second->Enabled() && itr->second->ID().Equals(strAddonId.c_str()))
+      return true;
+  return false;
+}
+
 void CPVRClients::Start(void)
 {
   Stop();
@@ -1134,10 +1144,7 @@ bool CPVRClients::UpdateAddons(void)
 void CPVRClients::Notify(const Observable &obs, const ObservableMessage msg)
 {
   if (msg == ObservableMessageAddons)
-  {
     UpdateAddons();
-    UpdateAndInitialiseClients();
-  }
 }
 
 bool CPVRClients::GetClient(const CStdString &strId, ADDON::AddonPtr &addon) const
