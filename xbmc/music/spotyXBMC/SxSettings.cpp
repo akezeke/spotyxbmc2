@@ -21,6 +21,7 @@
 
 #include "SxSettings.h"
 #include "URL.h"
+#include "Logger.h"
 
 namespace addon_music_spotify {
 
@@ -175,16 +176,21 @@ namespace addon_music_spotify {
     uint8_t tmp[512];
     int i = 0;
 
-    strcpy (path, CSpecialProtocol::TranslatePath("special://profile/appkey.h").c_str());
+    path = (char*) CSpecialProtocol::TranslatePath("special://profile/appkey.h").c_str();
 
     f = fopen(path, "r");
-    if(f == NULL)
+    if(f == NULL) {
+      Logger::printOut(sprintf("unable to open spotify appkey file '%s'\n", path));
       return 0;
+    }
 
     while (!feof(f)) {
       if(fgetc(f) == '0' && fgetc(f) == 'x') {
-        if(fgets(buf, 3, f) == NULL)
-		return 0;
+        if(fgets(buf, 3, f) == NULL) {
+          Logger::printOut(sprintf("unexpected end of file '%s'\n", path));
+          fclose(f);
+          return 0;
+        }
 
         tmp[i++] = strtol(buf, NULL, 16);
       }
@@ -192,7 +198,7 @@ namespace addon_music_spotify {
 
     fclose(f);
 
-    *appkey = (uint8_t*) realloc(*appkey, i);
+    *appkey = (uint8_t*) malloc(i);
     memcpy(*appkey, tmp, i);
 
     return i;
