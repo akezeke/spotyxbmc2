@@ -192,12 +192,14 @@ namespace addon_music_spotify {
     *appkey = malloc(size + 1);
     if (*appkey == NULL) {
       Logger::printOut("Failed to allocate memory for appkey");
+      fclose(f);
       return 0;
     }
 
     if (fread(*appkey, 1, size, f) != size) {
       Logger::printOut("Failed to read spotify appkey file:");
       Logger::printOut(path);
+      fclose(f);
       *appkey = NULL;
       return 0;
     }
