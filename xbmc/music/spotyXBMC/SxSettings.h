@@ -22,7 +22,6 @@
 #ifndef SXSETTINGS_H_
 #define SXSETTINGS_H_
 
-#include <stdint.h>
 #include <libspotify/api.h>
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
@@ -44,7 +43,7 @@ namespace addon_music_spotify {
       return m_enabled;
     }
 
-    size_t getAppKey(uint8_t *appkey[]);
+    size_t getAppKey(void **appkey);
 
     CStdString getUserName() {
       return m_userName;

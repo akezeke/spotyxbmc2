@@ -169,38 +169,42 @@ namespace addon_music_spotify {
     return (sp_radio_genre) mask;
   }
 
-  size_t Settings::getAppKey(uint8_t *appkey[]) {
-    char *path = NULL;
-    FILE *f = NULL;
-    char buf[3];
-    uint8_t tmp[512];
-    int i = 0;
+  size_t Settings::getAppKey(void **appkey) {
+    char *path;
+    FILE *f;
+    int size;
 
-    path = (char*) CSpecialProtocol::TranslatePath("special://profile/appkey.h").c_str();
+    path = new char [CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").size() + 1];
+    strcpy(path, CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").c_str());
 
     f = fopen(path, "r");
     if(f == NULL) {
-      Logger::printOut(sprintf("unable to open spotify appkey file '%s'\n", path));
+      Logger::printOut("Failed to open spotify appkey file:");
+      Logger::printOut(path);
+      *appkey = NULL;
       return 0;
     }
 
-    while (!feof(f)) {
-      if(fgetc(f) == '0' && fgetc(f) == 'x') {
-        if(fgets(buf, 3, f) == NULL) {
-          Logger::printOut(sprintf("unexpected end of file '%s'\n", path));
-          fclose(f);
-          return 0;
-        }
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    fseek(f, 0, SEEK_SET);
 
-        tmp[i++] = strtol(buf, NULL, 16);
-      }
+    *appkey = malloc(size + 1);
+    if(*appkey == NULL) {
+      Logger::printOut("Failed to allocate memory for appkey");
+      *appkey = NULL;
+      return 0;
+    }
+
+    if(fread(*appkey, 1, size, f) != size) {
+      Logger::printOut("Failed to read spotify appkey file:");
+      Logger::printOut(path);
+      *appkey = NULL;
+      return 0;
     }
 
     fclose(f);
 
-    *appkey = (uint8_t*) malloc(i);
-    memcpy(*appkey, tmp, i);
-
-    return i;
+    return size;
   }
 } /* namespace addon_music_spotify */

@@ -85,7 +85,7 @@ namespace addon_music_spotify {
       config.settings_location = cstr;
       config.tracefile = NULL;
 
-      config.application_key_size = Settings::getInstance()->getAppKey((uint8_t**) &config.application_key);
+      config.application_key_size = Settings::getInstance()->getAppKey((void**) &config.application_key);
       config.user_agent = "spotyXBMC2";
       config.device_id = "XBMC htpc";
 
