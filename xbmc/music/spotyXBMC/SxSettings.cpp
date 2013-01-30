@@ -172,13 +172,13 @@ namespace addon_music_spotify {
   size_t Settings::getAppKey(void **appkey) {
     char *path;
     FILE *f;
-    int size;
+    size_t size;
 
     path = new char [CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").size() + 1];
     strcpy(path, CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").c_str());
 
     f = fopen(path, "r");
-    if(f == NULL) {
+    if (f == NULL) {
       Logger::printOut("Failed to open spotify appkey file:");
       Logger::printOut(path);
       *appkey = NULL;
@@ -190,13 +190,12 @@ namespace addon_music_spotify {
     fseek(f, 0, SEEK_SET);
 
     *appkey = malloc(size + 1);
-    if(*appkey == NULL) {
+    if (*appkey == NULL) {
       Logger::printOut("Failed to allocate memory for appkey");
-      *appkey = NULL;
       return 0;
     }
 
-    if(fread(*appkey, 1, size, f) != size) {
+    if (fread(*appkey, 1, size, f) != size) {
       Logger::printOut("Failed to read spotify appkey file:");
       Logger::printOut(path);
       *appkey = NULL;
