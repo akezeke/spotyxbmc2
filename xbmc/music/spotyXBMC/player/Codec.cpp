@@ -77,15 +77,15 @@ namespace addon_music_spotify {
 
     Logger::printOut("trying to load track:");
     Logger::printOut(uri);
-    sp_link *spLink = sp_link_create_from_string(uri);
-    m_currentTrack = sp_link_as_track(spLink);
-    sp_track_add_ref(m_currentTrack);
-    sp_link_release(spLink);
+    sp_link *spLink = m_dll->sp_link_create_from_string(uri);
+    m_currentTrack = m_dll->sp_link_as_track(spLink);
+    m_dll->sp_track_add_ref(m_currentTrack);
+    m_dll->sp_link_release(spLink);
     m_endOfTrack = false;
     m_bufferPos = 0;
     m_startStream = false;
     m_isPlayerLoaded = false;
-    m_TotalTime = sp_track_duration(m_currentTrack);
+    m_TotalTime =  m_dll->sp_track_duration(m_currentTrack);
 
     //prefetch the next track!
 
@@ -100,10 +100,10 @@ namespace addon_music_spotify {
 	  			uri = uri.Left(uri.Find('.'));
 	  	    Logger::printOut("prefetching track:");
 	  	    Logger::printOut(uri);
-	  	    sp_link *spLink = sp_link_create_from_string(uri);
-	  	    sp_track* track = sp_link_as_track(spLink);
-	  	    sp_session_player_prefetch(getSession(), track);
-	  	    sp_link_release(spLink);
+            sp_link *spLink = m_dll->sp_link_create_from_string(uri);
+            sp_track* track = m_dll->sp_link_as_track(spLink);
+            m_dll->sp_session_player_prefetch(getSession(), track);
+            m_dll->sp_link_release(spLink);
 	  		}
 	  	}
 	  }
@@ -118,7 +118,7 @@ namespace addon_music_spotify {
 
   int64_t Codec::Seek(int64_t iSeekTime) {
     Logger::printOut("trying to seek");
-    sp_session_player_seek(getSession(), iSeekTime);
+    m_dll->sp_session_player_seek(getSession(), iSeekTime);
     m_bufferPos = 0;
     return iSeekTime;
   }
@@ -159,15 +159,15 @@ namespace addon_music_spotify {
       if (m_currentTrack) {
         CStdString name;
         Logger::printOut("load player 2");
-        if (sp_track_is_loaded(m_currentTrack)) {
-          sp_error error = sp_session_player_load(getSession(), m_currentTrack);
+        if (m_dll->sp_track_is_loaded(m_currentTrack)) {
+          sp_error error = m_dll->sp_session_player_load(getSession(), m_currentTrack);
           CStdString message;
           Logger::printOut("load player 3");
-          message.Format("%s", sp_error_message(error));
+          message.Format("%s", m_dll->sp_error_message(error));
           Logger::printOut(message);
           Logger::printOut("load player 4");
           if (SP_ERROR_OK == error) {
-            sp_session_player_play(getSession(), true);
+            m_dll->sp_session_player_play(getSession(), true);
             m_isPlayerLoaded = true;
             Logger::printOut("load player 5");
             return true;
@@ -184,10 +184,10 @@ namespace addon_music_spotify {
     while (!Session::getInstance()->lock()) {
     }
     if (m_isPlayerLoaded) {
-      sp_session_player_play(getSession(), false);
-      sp_session_player_unload(getSession());
+      m_dll->sp_session_player_play(getSession(), false);
+      m_dll->sp_session_player_unload(getSession());
       if (m_currentTrack != NULL) {
-        sp_track_release(m_currentTrack);
+        m_dll->sp_track_release(m_currentTrack);
       }
     }
 

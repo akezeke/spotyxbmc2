@@ -22,7 +22,7 @@
 #ifndef PLAYLISTCONTAINER_H_
 #define PLAYLISTCONTAINER_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <vector>
 
 namespace addon_music_spotify {
@@ -78,6 +78,9 @@ namespace addon_music_spotify {
     sp_playlist* m_spInboxList;
     sp_playlistcontainer_callbacks m_pcCallbacks;
     sp_playlistcontainer *m_spContainer;
+
+  protected:
+    DllLibspotify *m_dll;
 
   };
 

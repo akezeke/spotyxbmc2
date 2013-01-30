@@ -22,7 +22,7 @@
 #ifndef SXALBUM_H_
 #define SXALBUM_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <vector>
 #include <string>
 #include "../thumb/SxThumb.h"
@@ -58,10 +58,10 @@ namespace addon_music_spotify {
     }
 
     const char* getAlbumName() {
-      return sp_album_name(m_spAlbum);
+      return m_dll->sp_album_name(m_spAlbum);
     }
     const char* getAlbumArtistName() {
-      return sp_artist_name(sp_album_artist(m_spAlbum));
+      return m_dll->sp_artist_name(m_dll->sp_album_artist(m_spAlbum));
     }
     int getAlbumRating() {
       return m_rating;
@@ -139,6 +139,9 @@ namespace addon_music_spotify {
     string m_review;
     int m_rating;
     int m_year;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

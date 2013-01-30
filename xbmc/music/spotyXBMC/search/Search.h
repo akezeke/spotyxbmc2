@@ -22,7 +22,7 @@
 #ifndef SEARCH_H_
 #define SEARCH_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <string>
 #include <vector>
 #include "../album/AlbumContainer.h"
@@ -82,6 +82,9 @@ namespace addon_music_spotify {
     sp_search* m_currentSearch;
 
     bool m_cancelSearch;
+
+  protected:
+      DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

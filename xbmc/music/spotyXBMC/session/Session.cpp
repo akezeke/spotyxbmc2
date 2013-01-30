@@ -35,6 +35,9 @@
 namespace addon_music_spotify {
 
   Session::Session() {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
+
     m_isEnabled = false;
     m_isLoggedOut = false;
     m_session = NULL;
@@ -49,6 +52,7 @@ namespace addon_music_spotify {
   }
 
   Session::~Session() {
+      delete m_dll, m_dll = NULL;
   }
 
   bool Session::enable() {
@@ -63,7 +67,7 @@ namespace addon_music_spotify {
   }
 
   bool Session::processEvents() {
-    sp_session_process_events(m_session, &m_nextEvent);
+    m_dll->sp_session_process_events(m_session, &m_nextEvent);
     return true;
   }
 
@@ -97,23 +101,23 @@ namespace addon_music_spotify {
       config.dont_save_metadata_for_playlists = false;
       config.initially_unload_playlists = false;
 
-      sp_error error = sp_session_create(&config, &m_session);
+      sp_error error = m_dll->sp_session_create(&config, &m_session);
 
       if (SP_ERROR_OK != error) {
         Logger::printOut("Failed to create session: error:");
-        Logger::printOut(sp_error_message(error));
+        Logger::printOut(m_dll->sp_error_message(error));
         m_session = NULL;
         return false;
       }
 
       //set high bitrate
-      if (Settings::getInstance()->useHighBitrate()) sp_session_preferred_bitrate(m_session, SP_BITRATE_320k);
+      if (Settings::getInstance()->useHighBitrate()) m_dll->sp_session_preferred_bitrate(m_session, SP_BITRATE_320k);
 
-      sp_session_set_connection_type(m_session, SP_CONNECTION_TYPE_WIRED);
-      sp_session_set_connection_rules(m_session, SP_CONNECTION_RULE_NETWORK);
-      sp_session_set_volume_normalization(m_session, Settings::getInstance()->useNormalization());
+      m_dll->sp_session_set_connection_type(m_session, SP_CONNECTION_TYPE_WIRED);
+      m_dll->sp_session_set_connection_rules(m_session, SP_CONNECTION_RULE_NETWORK);
+      m_dll->sp_session_set_volume_normalization(m_session, Settings::getInstance()->useNormalization());
 
-      sp_session_login(m_session, Settings::getInstance()->getUserName().c_str(), Settings::getInstance()->getPassword().c_str(), true);
+      m_dll->sp_session_login(m_session, Settings::getInstance()->getUserName().c_str(), Settings::getInstance()->getPassword().c_str(), true);
       m_isEnabled = true;
       Logger::printOut("Logged in, returning");
       return true;
@@ -161,14 +165,14 @@ namespace addon_music_spotify {
 
       //TODO FIX THE LOGOUT... Why is it crashing on logout?
       m_isLoggedOut = false;
-      sp_session_logout(m_session);
+      m_dll->sp_session_logout(m_session);
 
       Logger::printOut("logged out waiting for callback");
       while (!m_isLoggedOut) {
         processEvents();
       }
       Logger::printOut("logged out");
-      sp_session_release(m_session);
+      m_dll->sp_session_release(m_session);
       Logger::printOut("cleaned session");
   	}
     return true;

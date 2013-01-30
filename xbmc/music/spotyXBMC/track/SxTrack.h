@@ -23,7 +23,7 @@
 #define SXTRACK_H_
 
 #include <string>
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include "URL.h"
 
 using namespace std;
@@ -99,7 +99,7 @@ namespace addon_music_spotify {
     }
 
     int getDisc() {
-      return sp_track_disc(m_spTrack);
+      return m_dll->sp_track_disc(m_spTrack);
     }
 
     friend class TrackStore;
@@ -126,6 +126,9 @@ namespace addon_music_spotify {
     int m_duration;
     int m_rating;
     int m_trackNumber;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

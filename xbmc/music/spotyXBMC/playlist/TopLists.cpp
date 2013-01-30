@@ -45,7 +45,7 @@ TopLists::TopLists() {
 }
 
 TopLists::~TopLists() {
-	unloadLists();
+    unloadLists();
 }
 
 void TopLists::unloadLists() {
@@ -59,45 +59,60 @@ void TopLists::unloadLists() {
 }
 
 void TopLists::reLoadArtists() {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	if (m_waitingForArtists)
 		return;
 	m_waitingForArtists = true;
 	sp_toplistregion region =
 			Settings::getInstance()->toplistRegionEverywhere() ?
 					SP_TOPLIST_REGION_EVERYWHERE :
-					(sp_toplistregion) sp_session_user_country(
+                    (sp_toplistregion) m_dll->sp_session_user_country(
 							Session::getInstance()->getSpSession());
-	sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
+     m_dll->sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
 			SP_TOPLIST_TYPE_ARTISTS, region, Settings::getInstance()->getUserName(),
 			&cb_toplistArtistsComplete, this);
+
+     delete m_dll, m_dll = NULL;
 }
 
 void TopLists::reLoadAlbums() {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	if (m_waitingForAlbums)
 		return;
 	m_waitingForAlbums = true;
 	sp_toplistregion region =
 			Settings::getInstance()->toplistRegionEverywhere() ?
 					SP_TOPLIST_REGION_EVERYWHERE :
-					(sp_toplistregion) sp_session_user_country(
+                    (sp_toplistregion) m_dll->sp_session_user_country(
 							Session::getInstance()->getSpSession());
-	sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
+    m_dll->sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
 			SP_TOPLIST_TYPE_ALBUMS, region, Settings::getInstance()->getUserName(),
 			&cb_toplistAlbumsComplete, this);
+
+    delete m_dll, m_dll = NULL;
 }
 
 void TopLists::reLoadTracks() {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	if (m_waitingForTracks)
 		return;
 	m_waitingForTracks = true;
 	sp_toplistregion region =
 			Settings::getInstance()->toplistRegionEverywhere() ?
 					SP_TOPLIST_REGION_EVERYWHERE :
-					(sp_toplistregion) sp_session_user_country(
+                    (sp_toplistregion) m_dll->sp_session_user_country(
 							Session::getInstance()->getSpSession());
-	sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
+    m_dll->sp_toplistbrowse_create(Session::getInstance()->getSpSession(),
 			SP_TOPLIST_TYPE_TRACKS, region, Settings::getInstance()->getUserName(),
 			&cb_toplistTracksComplete, this);
+
+    delete m_dll, m_dll = NULL;
 }
 
 bool TopLists::isArtistsLoaded() {
@@ -131,16 +146,19 @@ bool TopLists::getTrackItems(CFileItemList& items) {
 }
 
 void TopLists::cb_toplistArtistsComplete(sp_toplistbrowse *result,
-		void *userdata) {
+        void *userdata) {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	Logger::printOut("toplist artists callback");
 	TopLists *lists = (TopLists*) (userdata);
 
 	vector<SxArtist*> newArtists;
 
-	for (int index = 0; index < sp_toplistbrowse_num_artists(result); index++) {
+    for (int index = 0; index < m_dll->sp_toplistbrowse_num_artists(result); index++) {
 		//dont load the albums and tracks for all artists here, it takes forever
 		SxArtist* artist = ArtistStore::getInstance()->getArtist(
-				sp_toplistbrowse_artist(result, index), false);
+                m_dll->sp_toplistbrowse_artist(result, index), false);
 		if (artist != NULL)
 			newArtists.push_back(artist);
 	}
@@ -154,23 +172,28 @@ void TopLists::cb_toplistArtistsComplete(sp_toplistbrowse *result,
 	lists->m_waitingForArtists = false;
 	lists->m_artistsLoaded = true;
 	Logger::printOut("Toplist artists loaded");
+
+    delete m_dll, m_dll = NULL;
 }
 
 void TopLists::cb_toplistAlbumsComplete(sp_toplistbrowse *result,
 		void *userdata) {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	Logger::printOut("toplist albums callback");
 	TopLists *lists = (TopLists*) (userdata);
 
 	vector<SxAlbum*> newAlbums;
 
-	for (int index = 0; index < sp_toplistbrowse_num_albums(result); index++) {
-		sp_album* tempalbum = sp_toplistbrowse_album(result, index);
+    for (int index = 0; index < m_dll->sp_toplistbrowse_num_albums(result); index++) {
+        sp_album* tempalbum = m_dll->sp_toplistbrowse_album(result, index);
 		if (tempalbum == NULL)
 			continue;
-		while (!sp_album_is_loaded(tempalbum))
+        while (!m_dll->sp_album_is_loaded(tempalbum))
 			;
 
-		if (sp_album_is_available(tempalbum)) {
+        if (m_dll->sp_album_is_available(tempalbum)) {
 			SxAlbum* album = AlbumStore::getInstance()->getAlbum(tempalbum, true);
 			if (album != NULL)
 				newAlbums.push_back(album);
@@ -186,21 +209,26 @@ void TopLists::cb_toplistAlbumsComplete(sp_toplistbrowse *result,
 	lists->m_waitingForAlbums = false;
 	lists->m_albumsLoaded = true;
 	Logger::printOut("Toplist albums loaded");
+
+    delete m_dll, m_dll = NULL;
 }
 
 void TopLists::cb_toplistTracksComplete(sp_toplistbrowse *result,
 		void *userdata) {
+    DllLibspotify *m_dll = new DllLibspotify();
+    m_dll->Load();
+
 	Logger::printOut("toplist tracks callback");
 	TopLists *lists = (TopLists*) (userdata);
 	//add the tracks
 
 	vector<SxTrack*> newTracks;
 
-	for (int index = 0; index < sp_toplistbrowse_num_tracks(result); index++) {
-		if (sp_track_get_availability(Session::getInstance()->getSpSession(),
-				sp_toplistbrowse_track(result, index))) {
+    for (int index = 0; index < m_dll->sp_toplistbrowse_num_tracks(result); index++) {
+        if (m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(),
+                m_dll->sp_toplistbrowse_track(result, index))) {
 			SxTrack* track = TrackStore::getInstance()->getTrack(
-					sp_toplistbrowse_track(result, index));
+                    m_dll->sp_toplistbrowse_track(result, index));
 			if (track != NULL)
 				newTracks.push_back(track);
 		}
@@ -215,6 +243,8 @@ void TopLists::cb_toplistTracksComplete(sp_toplistbrowse *result,
 	lists->m_waitingForTracks = false;
 	lists->m_tracksLoaded = true;
 	Logger::printOut("Toplist tracks loaded");
+
+    delete m_dll, m_dll = NULL;
 }
 
 } /* namespace addon_music_spotify */

@@ -27,6 +27,9 @@
 namespace addon_music_spotify {
 
   SessionCallbacks::SessionCallbacks() {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
+
     m_callbacks.connection_error = &cb_connectionError;
     m_callbacks.logged_out = &cb_loggedOut;
     m_callbacks.message_to_user = 0;
@@ -46,19 +49,23 @@ namespace addon_music_spotify {
   }
 
   SessionCallbacks::~SessionCallbacks() {
+      delete m_dll, m_dll = NULL;
   }
 
   void SessionCallbacks::cb_connectionError(sp_session *session, sp_error error) {
   }
 
   void SessionCallbacks::cb_loggedIn(sp_session *session, sp_error error) {
+      DllLibspotify *m_dll = new DllLibspotify();
+      m_dll->Load();
     if (error == SP_ERROR_OK) {
       Session::getInstance()->loggedIn();
       Logger::printOut("Logged in!");
     } else {
       Logger::printOut("Error while logging in!");
-      Logger::printOut(sp_error_message(error));
+      Logger::printOut(m_dll->sp_error_message(error));
     }
+    delete m_dll, m_dll = NULL;
   }
 
   void SessionCallbacks::cb_loggedOut(sp_session *session) {

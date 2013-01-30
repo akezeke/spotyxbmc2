@@ -38,6 +38,9 @@
 namespace addon_music_spotify {
 
 	SxArtist::SxArtist(sp_artist *artist, bool loadTracksAndAlbums) {
+        m_dll = new DllLibspotify();
+        m_dll->Load();
+
 		m_spArtist = artist;
 		Logger::printOut("creating artist");
 		m_references = 1;
@@ -48,13 +51,13 @@ namespace addon_music_spotify {
 		m_thumb = NULL;
 		m_hasThumb = false;
 		m_bio = "";
-		sp_link *link = sp_link_create_from_artist(artist);
+        sp_link *link = m_dll->sp_link_create_from_artist(artist);
 		m_uri = new char[256];
-		sp_link_as_string(link, m_uri, 256);
-		sp_link_release(link);
+        m_dll->sp_link_as_string(link, m_uri, 256);
+        m_dll->sp_link_release(link);
 
 			//check if there is a thumb
-			const byte* image = sp_artist_portrait(artist);
+            const byte* image = m_dll->sp_artist_portrait(artist);
 			if (image) {
 				m_thumb = ThumbStore::getInstance()->getThumb(image);
 				if (m_thumb)
@@ -71,7 +74,7 @@ namespace addon_music_spotify {
 			m_hasDetails = true;
 		Logger::printOut("creating artist done");
 
-		m_fanart = ThumbStore::getInstance()->getFanart(sp_artist_name(m_spArtist));
+        m_fanart = ThumbStore::getInstance()->getFanart(m_dll->sp_artist_name(m_spArtist));
 	}
 
 	SxArtist::~SxArtist() {
@@ -88,8 +91,9 @@ namespace addon_music_spotify {
 			ThumbStore::getInstance()->removeThumb(m_thumb);
 		delete m_uri;
 		if (hasDetails() && m_browse != NULL)
-			sp_artistbrowse_release(m_browse);
-		sp_artist_release(m_spArtist);
+            m_dll->sp_artistbrowse_release(m_browse);
+        m_dll->sp_artist_release(m_spArtist);
+        delete m_dll;
 	}
 
 	bool SxArtist::isAlbumsLoaded() {
@@ -118,7 +122,7 @@ namespace addon_music_spotify {
 			return;
 
 		m_isLoadingDetails = true;
-		m_browse = sp_artistbrowse_create(Session::getInstance()->getSpSession(),
+        m_browse = m_dll->sp_artistbrowse_create(Session::getInstance()->getSpSession(),
 				m_spArtist, SP_ARTISTBROWSE_FULL, &cb_artistBrowseComplete, this);
 	}
 
@@ -127,15 +131,15 @@ namespace addon_music_spotify {
 			return;
 
 		m_isLoadingDetails = true;
-		m_browse = sp_artistbrowse_create(Session::getInstance()->getSpSession(),
-				m_spArtist, SP_ARTISTBROWSE_NO_ALBUMS, &cb_artistBrowseComplete, this);
+        m_browse = m_dll->sp_artistbrowse_create(Session::getInstance()->getSpSession(),
+                m_spArtist, SP_ARTISTBROWSE_NO_ALBUMS, &cb_artistBrowseComplete, this);
 	}
 
 	void SxArtist::detailsLoaded(sp_artistbrowse *result) {
-		if (sp_artistbrowse_error(result) == SP_ERROR_OK) {
+        if (m_dll->sp_artistbrowse_error(result) == SP_ERROR_OK) {
 			//check if there is a thumb
-			if (!m_hasThumb && sp_artistbrowse_num_portraits > 0) {
-				const byte* image = sp_artistbrowse_portrait(result, 0);
+            if (!m_hasThumb && m_dll->sp_artistbrowse_num_portraits(result) > 0) {
+                const byte* image = m_dll->sp_artistbrowse_portrait(result, 0);
 				if (image) {
 					m_thumb = ThumbStore::getInstance()->getThumb(image);
 				}
@@ -143,7 +147,7 @@ namespace addon_music_spotify {
 			if (m_thumb != NULL)
 				m_hasThumb = true;
 
-			m_bio = sp_artistbrowse_biography(result);
+            m_bio = m_dll->sp_artistbrowse_biography(result);
 			//remove the links from the bio text (it contains spotify uris so maybe we can do something fun with it later)
 			Utils::cleanTags(m_bio);
 
@@ -151,17 +155,17 @@ namespace addon_music_spotify {
 				//add the albums
 				int maxAlbums =
 						Settings::getInstance()->getArtistNumberAlbums() == -1 ?
-								sp_artistbrowse_num_albums(m_browse) :
+                                m_dll->sp_artistbrowse_num_albums(m_browse) :
 								Settings::getInstance()->getArtistNumberAlbums();
 
 				int addedAlbums = 0;
 				for (int index = 0;
-						index < sp_artistbrowse_num_albums(m_browse)
+                        index < m_dll->sp_artistbrowse_num_albums(m_browse)
 								&& addedAlbums < maxAlbums; index++) {
-					if (sp_album_is_available(sp_artistbrowse_album(m_browse, index))) {
+                    if (m_dll->sp_album_is_available(m_dll->sp_artistbrowse_album(m_browse, index))) {
 						m_albums.push_back(
 								AlbumStore::getInstance()->getAlbum(
-										sp_artistbrowse_album(m_browse, index), true));
+                                        m_dll->sp_artistbrowse_album(m_browse, index), true));
 						addedAlbums++;
 					}
 				}
@@ -169,18 +173,18 @@ namespace addon_music_spotify {
 				//add the tracks
 				int maxTracks =
 						Settings::getInstance()->getArtistNumberTracks() == -1 ?
-								sp_artistbrowse_num_tracks(m_browse) :
+                                m_dll->sp_artistbrowse_num_tracks(m_browse) :
 								Settings::getInstance()->getArtistNumberTracks();
 
 				int addedTracks = 0;
 				for (int index = 0;
-						index < sp_artistbrowse_num_tracks(m_browse)
+                        index < m_dll->sp_artistbrowse_num_tracks(m_browse)
 								&& addedTracks < maxTracks; index++) {
-					if (sp_track_get_availability(Session::getInstance()->getSpSession(),
-							sp_artistbrowse_track(m_browse, index))) {
+                    if (m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(),
+                            m_dll->sp_artistbrowse_track(m_browse, index))) {
 						m_tracks.push_back(
 								TrackStore::getInstance()->getTrack(
-										sp_artistbrowse_track(m_browse, index)));
+                                        m_dll->sp_artistbrowse_track(m_browse, index)));
 						addedTracks++;
 					}
 				}
@@ -188,16 +192,16 @@ namespace addon_music_spotify {
 				//add the artists
 				int maxArtists =
 						Settings::getInstance()->getArtistNumberArtists() == -1 ?
-								sp_artistbrowse_num_similar_artists(m_browse) :
+                                m_dll->sp_artistbrowse_num_similar_artists(m_browse) :
 								Settings::getInstance()->getArtistNumberArtists();
 
 				int addedArtists = 0;
 				for (int index = 0;
-						index < sp_artistbrowse_num_similar_artists(m_browse)
+                        index < m_dll->sp_artistbrowse_num_similar_artists(m_browse)
 								&& addedArtists < maxArtists; index++) {
 					m_artists.push_back(
 							ArtistStore::getInstance()->getArtist(
-									sp_artistbrowse_similar_artist(m_browse, index), false));
+                                    m_dll->sp_artistbrowse_similar_artist(m_browse, index), false));
 					addedArtists++;
 				}
 
@@ -209,7 +213,7 @@ namespace addon_music_spotify {
 		Logger::printOut("artist browse complete done");
 	}
 
-	void SxArtist::cb_artistBrowseComplete(sp_artistbrowse *result,
+    void SxArtist::cb_artistBrowseComplete(sp_artistbrowse *result,
 			void *userdata) {
 		Logger::printOut("artist browse complete");
 		SxArtist *artist = (SxArtist*) (userdata);

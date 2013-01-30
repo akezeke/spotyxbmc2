@@ -39,6 +39,9 @@ namespace addon_music_spotify {
 	using namespace std;
 
 	ThumbStore::ThumbStore() {
+        m_dll = new DllLibspotify();
+        m_dll->Load();
+
 		Logger::printOut("ThumbStore creating paths");
 		//Utils::removeDir(Settings::getInstance()->getThumbPath());
 		Utils::createDir(Settings::getInstance()->getThumbPath());
@@ -80,6 +83,7 @@ namespace addon_music_spotify {
 		for (thumbMap::iterator it = m_thumbs.begin(); it != m_thumbs.end(); ++it) {
 			delete it->second;
 		}
+        delete m_dll, m_dll = NULL;
 	}
 
 	ThumbStore* ThumbStore::m_instance = 0;
@@ -94,7 +98,7 @@ namespace addon_music_spotify {
 		if (it == m_thumbs.end()) {
 			//we need to create it
 			//Logger::printOut("create thumb");
-			sp_image* spImage = sp_image_create(
+            sp_image* spImage = m_dll->sp_image_create(
 					Session::getInstance()->getSpSession(), (unsigned char*) image);
 
 			if (!spImage) {

@@ -34,6 +34,10 @@ namespace addon_music_spotify {
 		const CStdString pluginId = "plugin.music.spotyXBMC";
 		CStdString value = "";
 
+        m_dll = new DllLibspotify;
+        if(!m_dll->Load())
+            return false;
+
 		if (ADDON::CAddonMgr::Get().GetAddon(pluginId, addon)) {
 		  ADDON::CAddonMgr::Get().LoadAddonDescription(pluginId, addon);
 

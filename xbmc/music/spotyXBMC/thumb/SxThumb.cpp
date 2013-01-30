@@ -33,14 +33,17 @@ namespace addon_music_spotify {
 	using namespace std;
 
 	SxThumb::SxThumb(sp_image* image, string path) {
+        m_dll = new DllLibspotify();
+        m_dll->Load();
+
 		m_isLoaded = false;
 		m_image = image;
-		sp_link *link = sp_link_create_from_image(image);
+        sp_link *link = m_dll->sp_link_create_from_image(image);
 		char linkString[256];
-		sp_link_as_string(link, linkString, 256);
+        m_dll->sp_link_as_string(link, linkString, 256);
 		CStdString linkStringClean = linkString;
 		linkStringClean.Remove(':');
-		sp_link_release(link);
+        m_dll->sp_link_release(link);
 		m_file = path + linkStringClean.c_str() + ".jpg";
 		if (XFILE::CFile::Exists(m_file, true)) {
 			m_isLoaded = true;
@@ -55,7 +58,7 @@ namespace addon_music_spotify {
 			m_isLoaded = true;
 		  } else {
 			m_imageIsFromCache = false;
-			sp_image_add_load_callback(m_image, &cb_imageLoaded, this);
+            m_dll->sp_image_add_load_callback(m_image, &cb_imageLoaded, this);
 		  }
 		}
 
@@ -65,16 +68,16 @@ namespace addon_music_spotify {
 
 	SxThumb::~SxThumb() {
 		if (!m_isLoaded)
-			sp_image_remove_load_callback(m_image, &cb_imageLoaded, this);
-		sp_image_release(m_image);
+            m_dll->sp_image_remove_load_callback(m_image, &cb_imageLoaded, this);
+        m_dll->sp_image_release(m_image);
 		//dont delete it from the cache
 		if (!m_imageIsFromCache)
 			Utils::removeFile(m_file.c_str());
-
+        delete m_dll, m_dll = NULL;
 	}
 
 	void SxThumb::thumbLoaded(sp_image *image) {
-		if (sp_image_error(image) != SP_ERROR_OK) {
+        if (m_dll-> sp_image_error(image) != SP_ERROR_OK) {
 			Logger::printOut("creating image error");
 			m_file = "";
 			//well its loaded but without image
@@ -86,7 +89,7 @@ namespace addon_music_spotify {
 		if (file.OpenForWrite(m_file, true)) {
 			const void *buffer;
 			size_t len;
-			buffer = sp_image_data(image, &len);
+            buffer = m_dll->sp_image_data(image, &len);
 			file.Write((const char*) buffer, len);
 			file.Close();
 		}

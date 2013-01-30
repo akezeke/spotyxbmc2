@@ -22,7 +22,7 @@
 #ifndef SXTHUMB_H_
 #define SXTHUMB_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <string>
 
 namespace addon_music_spotify {
@@ -66,6 +66,9 @@ namespace addon_music_spotify {
     bool m_imageIsFromCache;
     string m_file;
     int m_references;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

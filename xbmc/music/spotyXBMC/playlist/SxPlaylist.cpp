@@ -31,6 +31,9 @@
 namespace addon_music_spotify {
 
   SxPlaylist::SxPlaylist(sp_playlist* spPlaylist, int index, bool isFolder) {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
+
     m_spPlaylist = spPlaylist;
     m_isValid = true;
     m_isFolder = isFolder;
@@ -38,7 +41,7 @@ namespace addon_music_spotify {
     m_thumb = NULL;
 
     if (!isFolder) {
-      if (sp_playlist_is_loaded(spPlaylist)) reLoad();
+      if (m_dll->sp_playlist_is_loaded(spPlaylist)) reLoad();
       m_plCallbacks.description_changed = 0;
       m_plCallbacks.image_changed = 0;
       m_plCallbacks.playlist_metadata_updated = &cb_playlist_metadata_updated;
@@ -53,29 +56,31 @@ namespace addon_music_spotify {
       m_plCallbacks.tracks_moved = &cb_tracks_moved;
       m_plCallbacks.tracks_removed = &cb_tracks_removed;
 
-      sp_playlist_add_callbacks(spPlaylist, &m_plCallbacks, this);
+      m_dll->sp_playlist_add_callbacks(spPlaylist, &m_plCallbacks, this);
     }
   }
 
   SxPlaylist::~SxPlaylist() {
-    sp_playlist_remove_callbacks(m_spPlaylist, &m_plCallbacks, this);
+    m_dll->sp_playlist_remove_callbacks(m_spPlaylist, &m_plCallbacks, this);
     if (!isFolder()) {
       removeAllTracks();
     }
     //let it bleed a little, not sure if the reference actualy goes up or if it is linked to the container
     // if (m_isValid)
     //   sp_playlist_release(m_spPlaylist);
+
+    delete m_dll, m_dll = NULL;
   }
 
   const char* SxPlaylist::getName() {
 	 //not the most elegant solution, but if the index is 0, its the inbox
-    return m_index == 0 ? Settings::getInstance()->getInboxString().GetBufferSetLength(Settings::getInstance()->getInboxString().GetLength() +1) : sp_playlist_name(m_spPlaylist);
+    return m_index == 0 ? Settings::getInstance()->getInboxString().GetBufferSetLength(Settings::getInstance()->getInboxString().GetLength() +1) : m_dll->sp_playlist_name(m_spPlaylist);
   }
 
   const char* SxPlaylist::getOwnerName() {
-    sp_user* user = sp_playlist_owner(m_spPlaylist);
-    if (user != sp_session_user(Session::getInstance()->getSpSession())) {
-      return sp_user_display_name(user);
+    sp_user* user = m_dll->sp_playlist_owner(m_spPlaylist);
+    if (user != m_dll->sp_session_user(Session::getInstance()->getSpSession())) {
+      return m_dll->sp_user_display_name(user);
     }
     return NULL;
   }
@@ -102,15 +107,15 @@ namespace addon_music_spotify {
       m_thumb = NULL;
       //TODO fix a thumb, why is it never returning any images?
       byte image[20];
-      if (sp_playlist_get_image(m_spPlaylist, image)) {
+      if (m_dll->sp_playlist_get_image(m_spPlaylist, image)) {
         m_thumb = ThumbStore::getInstance()->getThumb(image);
       }
       Logger::printOut("reload play 3");
 
       vector<SxTrack*> newTracks;
-      for (int index = 0; index < sp_playlist_num_tracks(m_spPlaylist); index++) {
-        sp_track* spTrack = sp_playlist_track(m_spPlaylist, index);
-        if (!sp_track_get_availability(Session::getInstance()->getSpSession(), spTrack)) continue;
+      for (int index = 0; index < m_dll->sp_playlist_num_tracks(m_spPlaylist); index++) {
+        sp_track* spTrack = m_dll->sp_playlist_track(m_spPlaylist, index);
+        if (!m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(), spTrack)) continue;
         SxTrack* track = TrackStore::getInstance()->getTrack(spTrack);
         if (track) {
           newTracks.push_back(track);

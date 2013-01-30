@@ -28,6 +28,8 @@ using namespace std;
 namespace addon_music_spotify {
 
   TrackStore::TrackStore() {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
     // TODO Auto-generated constructor stub
 
   }
@@ -40,6 +42,7 @@ namespace addon_music_spotify {
     for (trackMap::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
       delete it->second;
     }
+    delete m_dll, m_dll = NULL;
   }
 
   TrackStore* TrackStore::m_instance = 0;
@@ -49,11 +52,11 @@ namespace addon_music_spotify {
 
   SxTrack* TrackStore::getTrack(sp_track *spTrack) {
     //Logger::printOut("asking store for track");
-    sp_track_add_ref(spTrack);
-    while (!sp_track_is_loaded(spTrack))
+    m_dll->sp_track_add_ref(spTrack);
+    while (!m_dll->sp_track_is_loaded(spTrack))
       ;
     //Logger::printOut("track done loading");
-    if (sp_track_error(spTrack) != SP_ERROR_OK) {
+    if (m_dll->sp_track_error(spTrack) != SP_ERROR_OK) {
       Logger::printOut("error in track");
       return NULL;
     }

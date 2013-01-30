@@ -23,7 +23,7 @@
 #define PLAYERHANDLER_H_
 
 #include <string>
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 
 using namespace std;
 

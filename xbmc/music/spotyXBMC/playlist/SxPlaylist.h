@@ -22,7 +22,7 @@
 #ifndef SXPLAYLIST_H_
 #define SXPLAYLIST_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include "../track/TrackContainer.h"
 #include <vector>
 
@@ -76,6 +76,7 @@ namespace addon_music_spotify {
   protected:
     bool m_isValid;
     sp_playlist* m_spPlaylist;
+    DllLibspotify *m_dll;
 
   private:
     bool m_isFolder;

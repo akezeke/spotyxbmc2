@@ -32,6 +32,9 @@
 namespace addon_music_spotify {
 
   Search::Search(string query) {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
+
     m_maxArtistResults = Settings::getInstance()->getSearchNumberArtists();
     m_maxAlbumResults = Settings::getInstance()->getSearchNumberAlbums();
     m_maxTrackResults = Settings::getInstance()->getSearchNumberTracks();
@@ -46,7 +49,7 @@ namespace addon_music_spotify {
     m_cancelSearch = false;
     Logger::printOut("creating search");
     Logger::printOut(query);
-    m_currentSearch = sp_search_create(Session::getInstance()->getSpSession(), m_query.c_str(), 0, m_maxTrackResults, 0, m_maxAlbumResults, 0, m_maxArtistResults, &cb_searchComplete, this);
+    m_currentSearch = m_dll->sp_search_create(Session::getInstance()->getSpSession(), m_query.c_str(), 0, m_maxTrackResults, 0, m_maxAlbumResults, 0, m_maxArtistResults, &cb_searchComplete, this);
 
   }
 
@@ -61,6 +64,7 @@ namespace addon_music_spotify {
     removeAllArtists();
     Logger::printOut("cleaning after search done");
 
+    delete m_dll, m_dll = NULL;
   }
 
   bool Search::getTrackItems(CFileItemList& items) {

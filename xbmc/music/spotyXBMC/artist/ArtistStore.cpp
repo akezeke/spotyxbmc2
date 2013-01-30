@@ -26,10 +26,12 @@
 namespace addon_music_spotify {
 
 ArtistStore::ArtistStore() {
+    m_dll = new DllLibspotify();
+    m_dll->Load();
 }
 
 void ArtistStore::deInit() {
-	delete m_instance;
+    delete m_instance;
 }
 
 ArtistStore::~ArtistStore() {
@@ -38,6 +40,7 @@ ArtistStore::~ArtistStore() {
 			++it) {
 		delete it->second;
 	}
+    delete m_dll, m_dll = NULL;
 }
 
 ArtistStore* ArtistStore::m_instance = 0;
@@ -48,8 +51,8 @@ ArtistStore *ArtistStore::getInstance() {
 SxArtist* ArtistStore::getArtist(sp_artist *spArtist,
 		bool loadAlbumsAndTracks) {
 	Logger::printOut("loading spArtist");
-	sp_artist_add_ref(spArtist);
-	while (!sp_artist_is_loaded(spArtist))
+    m_dll->sp_artist_add_ref(spArtist);
+    while (!m_dll->sp_artist_is_loaded(spArtist))
 		;
 
 	artistMap::iterator it = m_artists.find(spArtist);

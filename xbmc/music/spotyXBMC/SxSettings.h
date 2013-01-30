@@ -22,7 +22,7 @@
 #ifndef SXSETTINGS_H_
 #define SXSETTINGS_H_
 
-#include <libspotify/api.h>
+#include "DllLibspotify.h"
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"
 #include "filesystem/Directory.h"
@@ -268,6 +268,9 @@ namespace addon_music_spotify {
     virtual ~Settings();
 
     static Settings *m_instance;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

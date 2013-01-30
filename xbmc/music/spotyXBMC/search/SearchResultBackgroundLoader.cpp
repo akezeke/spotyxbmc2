@@ -29,11 +29,14 @@
 namespace addon_music_spotify {
 
   SearchResultBackgroundLoader::SearchResultBackgroundLoader(Search* search) : CThread("Spotify SearchResultBackgroundLoader"){
+      m_dll = new DllLibspotify();
+      m_dll->Load();
     m_search = search;
   }
 
   SearchResultBackgroundLoader::~SearchResultBackgroundLoader() {
     // TODO Auto-generated destructor stub
+      delete m_dll, m_dll = NULL;
   }
 
   void SearchResultBackgroundLoader::OnStartup() {
@@ -52,33 +55,33 @@ namespace addon_music_spotify {
 
     if (m_search->m_cancelSearch) {
       Logger::printOut("search results arived, aborting due to request");
-      sp_search_release(m_search->m_currentSearch);
+      m_dll->sp_search_release(m_search->m_currentSearch);
       Session::getInstance()->unlock();
       return;
     }
     Logger::printOut("search results arived");
 
     //add the albums
-    for (int index = 0; index < sp_search_num_albums(m_search->m_currentSearch); index++) {
-      if (sp_album_is_available(sp_search_album(m_search->m_currentSearch, index))) {
-        m_search->m_albums.push_back(AlbumStore::getInstance()->getAlbum(sp_search_album(m_search->m_currentSearch, index), true));
+    for (int index = 0; index < m_dll->sp_search_num_albums(m_search->m_currentSearch); index++) {
+      if (m_dll->sp_album_is_available(m_dll->sp_search_album(m_search->m_currentSearch, index))) {
+        m_search->m_albums.push_back(AlbumStore::getInstance()->getAlbum(m_dll->sp_search_album(m_search->m_currentSearch, index), true));
       }
     }
 
     //add the tracks
-    for (int index = 0; index < sp_search_num_tracks(m_search->m_currentSearch); index++) {
-      if (sp_track_get_availability(Session::getInstance()->getSpSession(), sp_search_track(m_search->m_currentSearch, index))) {
-        m_search->m_tracks.push_back(TrackStore::getInstance()->getTrack(sp_search_track(m_search->m_currentSearch, index)));
+    for (int index = 0; index < m_dll->sp_search_num_tracks(m_search->m_currentSearch); index++) {
+      if (m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(), m_dll->sp_search_track(m_search->m_currentSearch, index))) {
+        m_search->m_tracks.push_back(TrackStore::getInstance()->getTrack(m_dll->sp_search_track(m_search->m_currentSearch, index)));
       }
     }
 
     //add the artists
-    for (int index = 0; index < sp_search_num_artists(m_search->m_currentSearch); index++) {
+    for (int index = 0; index < m_dll->sp_search_num_artists(m_search->m_currentSearch); index++) {
       //dont load the albums and tracks for all artists here, it takes forever
-      m_search->m_artists.push_back(ArtistStore::getInstance()->getArtist(sp_search_artist(m_search->m_currentSearch, index), false));
+      m_search->m_artists.push_back(ArtistStore::getInstance()->getArtist(m_dll->sp_search_artist(m_search->m_currentSearch, index), false));
     }
 
-    sp_search_release(m_search->m_currentSearch);
+    m_dll->sp_search_release(m_search->m_currentSearch);
 
     //wait for all albums, tracks and artists to load before calling out
     Session::getInstance()->unlock();

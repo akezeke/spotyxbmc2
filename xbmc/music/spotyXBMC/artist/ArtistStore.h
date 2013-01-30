@@ -22,7 +22,7 @@
 #ifndef ARTISTSTORE_H_
 #define ARTISTSTORE_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <string>
 #ifdef _WIN32
 #include <unordered_map>
@@ -51,6 +51,9 @@ namespace addon_music_spotify {
 
     typedef std::tr1::unordered_map<sp_artist*, SxArtist*> artistMap;
     artistMap m_artists;
+
+  protected:
+      DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

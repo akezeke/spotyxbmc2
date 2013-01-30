@@ -22,7 +22,7 @@
 #ifndef CODEC_H_
 #define CODEC_H_
 #include "../../../cores/paplayer/CachingCodec.h"
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 
 namespace addon_music_spotify {
 
@@ -57,6 +57,9 @@ namespace addon_music_spotify {
     int m_bufferSize;
     char *m_buffer;
     int m_bufferPos;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

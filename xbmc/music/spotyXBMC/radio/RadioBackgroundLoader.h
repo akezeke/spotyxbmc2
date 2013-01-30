@@ -42,6 +42,8 @@ namespace addon_music_spotify {
     void Process();
     SxRadio* m_radio;
 
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

@@ -24,7 +24,7 @@
 
 #include <vector>
 #include <string>
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include "Search.h"
 #include "../album/SxAlbum.h"
 #include "../artist/SxArtist.h"

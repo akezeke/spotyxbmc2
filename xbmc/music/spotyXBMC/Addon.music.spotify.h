@@ -79,6 +79,9 @@ private:
   bool getAllArtists(CFileItemList& items);
   bool getArtistSimilarArtists(CFileItemList& items, CStdString uri);
   bool getTopListArtists(CFileItemList& items);
+
+protected:
+  DllLibspotify *m_dll;
 };
 extern Addon_music_spotify* g_spotify;
 #endif /* ADDONMUSICSPOTIFY_H_ */

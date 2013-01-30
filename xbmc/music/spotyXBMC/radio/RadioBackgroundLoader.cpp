@@ -30,11 +30,15 @@
 namespace addon_music_spotify {
 
   RadioBackgroundLoader::RadioBackgroundLoader(SxRadio* radio) : CThread("Spotify RadioBackgroundLoader") {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
+
     m_radio = radio;
   }
 
   RadioBackgroundLoader::~RadioBackgroundLoader() {
     // TODO Auto-generated destructor stub
+      delete m_dll, m_dll = NULL;
   }
 
   void RadioBackgroundLoader::OnStartup() {
@@ -55,11 +59,11 @@ namespace addon_music_spotify {
     //add the tracks
     if (m_radio->m_currentSearch != NULL) {
       //if there are no tracks, return and break
-      if (sp_search_num_tracks(m_radio->m_currentSearch) == 0) return;
+      if (m_dll->sp_search_num_tracks(m_radio->m_currentSearch) == 0) return;
 
-      for (int index = m_radio->m_currentResultPos; index < sp_search_num_tracks(m_radio->m_currentSearch) && m_radio->m_tracks.size() < m_radio->m_numberOfTracksToDisplay; index++) {
-        if (sp_track_get_availability(Session::getInstance()->getSpSession(), sp_search_track(m_radio->m_currentSearch, index))) {
-          m_radio->m_tracks.push_back(TrackStore::getInstance()->getTrack(sp_search_track(m_radio->m_currentSearch, index)));
+      for (int index = m_radio->m_currentResultPos; index < m_dll->sp_search_num_tracks(m_radio->m_currentSearch) && m_radio->m_tracks.size() < m_radio->m_numberOfTracksToDisplay; index++) {
+        if (m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(), m_dll->sp_search_track(m_radio->m_currentSearch, index))) {
+          m_radio->m_tracks.push_back(TrackStore::getInstance()->getTrack(m_dll->sp_search_track(m_radio->m_currentSearch, index)));
         }
         m_radio->m_currentResultPos++;
       }
@@ -68,7 +72,7 @@ namespace addon_music_spotify {
     //are we still missing tracks? Do a new search
     if (m_radio->m_tracks.size() < m_radio->m_numberOfTracksToDisplay) {
       m_radio->m_isWaitingForResults = true;
-      m_radio->m_currentSearch = sp_radio_search_create(Session::getInstance()->getSpSession(), m_radio->m_fromYear, m_radio->m_toYear, m_radio->m_genres, &m_radio->cb_searchComplete, m_radio);
+      m_radio->m_currentSearch = m_dll->sp_radio_search_create(Session::getInstance()->getSpSession(), m_radio->m_fromYear, m_radio->m_toYear, m_radio->m_genres, &m_radio->cb_searchComplete, m_radio);
       Session::getInstance()->unlock();
     } else {
       Logger::printOut("radio fetch tracks done");

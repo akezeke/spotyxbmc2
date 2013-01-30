@@ -23,11 +23,7 @@
 #define SESSION_H_
 
 
-namespace spotify {
-#include <libspotify/api.h>
-}
-
-using namespace spotify;
+#include "../DllLibspotify.h"
 #include "BackgroundThread.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -105,6 +101,9 @@ namespace addon_music_spotify {
     bool disConnect();
 
     friend class BackgroundThread;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

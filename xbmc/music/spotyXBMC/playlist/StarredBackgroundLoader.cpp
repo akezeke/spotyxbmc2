@@ -34,9 +34,12 @@
 namespace addon_music_spotify {
 
 StarredBackgroundLoader::StarredBackgroundLoader() : CThread("Spotify StarredBackgroundLoader"){
+    m_dll = new DllLibspotify();
+    m_dll->Load();
 }
 
 StarredBackgroundLoader::~StarredBackgroundLoader() {
+    delete m_dll, m_dll = NULL;
 }
 
 void StarredBackgroundLoader::OnStartup() {
@@ -62,13 +65,13 @@ void StarredBackgroundLoader::Process() {
 		ls->m_reload = false;
 
 		vector<SxTrack*> newTracks;
-		for (int index = 0; index < sp_playlist_num_tracks(ls->m_spPlaylist);
+        for (int index = 0; index < m_dll->sp_playlist_num_tracks(ls->m_spPlaylist);
 				index++) {
-			if (!sp_track_get_availability(Session::getInstance()->getSpSession(),
-					sp_playlist_track(ls->m_spPlaylist, index)))
+            if (!m_dll->sp_track_get_availability(Session::getInstance()->getSpSession(),
+                    m_dll->sp_playlist_track(ls->m_spPlaylist, index)))
 				continue;
 			SxTrack* track = TrackStore::getInstance()->getTrack(
-					sp_playlist_track(ls->m_spPlaylist, index));
+                    m_dll->sp_playlist_track(ls->m_spPlaylist, index));
 			if (track) {
 				newTracks.push_back(track);
 			}
@@ -82,11 +85,11 @@ void StarredBackgroundLoader::Process() {
 		set<sp_artist*> tempArtists;
 		for (int i = 0; i < ls->getNumberOfTracks(); i++) {
 
-			sp_album* tempAlbum = sp_track_album(ls->m_tracks[i]->getSpTrack());
+            sp_album* tempAlbum = m_dll->sp_track_album(ls->m_tracks[i]->getSpTrack());
 			if (tempAlbum != NULL)
 				tempAlbums.insert(tempAlbum);
 
-			sp_artist* tempArtist = sp_track_artist(ls->m_tracks[i]->getSpTrack(), 0);
+            sp_artist* tempArtist = m_dll->sp_track_artist(ls->m_tracks[i]->getSpTrack(), 0);
 			if (tempArtist != NULL)
 				tempArtists.insert(tempArtist);
 		}
@@ -100,7 +103,7 @@ void StarredBackgroundLoader::Process() {
 			sp_album* tempalbum = (sp_album*) *albumIt;
 			if (tempalbum == NULL)
 				continue;
-			while (!sp_album_is_loaded(tempalbum))
+            while (!m_dll->sp_album_is_loaded(tempalbum))
 				SleepMs(1);
 
 			SxAlbum* album = AlbumStore::getInstance()->getAlbum(tempalbum, true);
@@ -115,14 +118,14 @@ void StarredBackgroundLoader::Process() {
 			}
 
 			if (!album->hasTracksAndDetails() || album->getTracks().size() == 0
-					|| !sp_album_is_available(album->getSpAlbum())) {
+                    || !m_dll->sp_album_is_available(album->getSpAlbum())) {
 				AlbumStore::getInstance()->removeAlbum(album);
 				continue;
 			}
 			bool albumIsStarred = true;
 			vector<SxTrack*> tracks = album->getTracks();
 			for (int i = 0; i < tracks.size(); i++) {
-				if (!sp_track_is_starred(Session::getInstance()->getSpSession(),
+                if (!m_dll->sp_track_is_starred(Session::getInstance()->getSpSession(),
 						tracks[i]->getSpTrack())) {
 					albumIsStarred = false;
 					break;

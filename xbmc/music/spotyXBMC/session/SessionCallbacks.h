@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include "../SxSettings.h"
 #include "../Logger.h"
 
@@ -60,6 +60,9 @@ namespace addon_music_spotify {
 
   private:
     sp_session_callbacks m_callbacks;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

@@ -27,7 +27,7 @@
 #else
 #include <tr1/unordered_map>
 #endif
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <string.h>
 #include "URL.h"
 
@@ -62,6 +62,9 @@ namespace addon_music_spotify {
     stringMap m_fanarts;
 
     CStdString* m_stdFanart;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

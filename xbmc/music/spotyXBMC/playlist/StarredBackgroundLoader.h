@@ -23,6 +23,7 @@
 #define STARREDBACKGROUNDLOADER_H_
 
 #include "threads/Thread.h"
+#include "../DllLibspotify.h"
 
 namespace addon_music_spotify {
 
@@ -38,6 +39,9 @@ namespace addon_music_spotify {
     void OnExit();
     void OnException(); // signal termination handler
     void Process();
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

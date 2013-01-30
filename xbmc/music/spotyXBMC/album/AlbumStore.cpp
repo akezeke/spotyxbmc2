@@ -26,6 +26,8 @@
 namespace addon_music_spotify {
 
   AlbumStore::AlbumStore() {
+      m_dll = new DllLibspotify();
+      m_dll->Load();
   }
 
   void AlbumStore::deInit() {
@@ -36,6 +38,7 @@ namespace addon_music_spotify {
     for (albumMap::iterator it = m_albums.begin(); it != m_albums.end(); ++it) {
       delete it->second;
     }
+    delete m_dll, m_dll = NULL;
   }
 
   AlbumStore* AlbumStore::m_instance = 0;
@@ -45,8 +48,8 @@ namespace addon_music_spotify {
 
   SxAlbum* AlbumStore::getAlbum(sp_album *spAlbum, bool loadTracksAndDetails) {
     //Logger::printOut("loading spAlbum");
-    sp_album_add_ref(spAlbum);
-    while (!sp_album_is_loaded(spAlbum))
+    m_dll->sp_album_add_ref(spAlbum);
+    while (!m_dll->sp_album_is_loaded(spAlbum))
       ;
 
     albumMap::iterator it = m_albums.find(spAlbum);

@@ -22,7 +22,7 @@
 #ifndef ALBUMSTORE_H_
 #define ALBUMSTORE_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #ifdef _WIN32
 #include <unordered_map>
 #else
@@ -51,6 +51,9 @@ namespace addon_music_spotify {
 
     typedef std::tr1::unordered_map<sp_album*, SxAlbum*> albumMap;
     albumMap m_albums;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

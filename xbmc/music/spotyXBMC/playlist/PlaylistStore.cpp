@@ -36,30 +36,34 @@ namespace addon_music_spotify {
 
   PlaylistStore::PlaylistStore() {
     Logger::printOut("init playliststore");
+
+    m_dll = new DllLibspotify();
+    m_dll->Load();
+
     m_isLoaded = false;
     m_starredList = NULL;
     m_topLists = NULL;
-    m_spContainer = sp_session_playlistcontainer(Session::getInstance()->getSpSession());
-    m_spStarredList = sp_session_starred_create(Session::getInstance()->getSpSession());
-    m_spInboxList = sp_session_inbox_create(Session::getInstance()->getSpSession());
+    m_spContainer = m_dll->sp_session_playlistcontainer(Session::getInstance()->getSpSession());
+    m_spStarredList = m_dll->sp_session_starred_create(Session::getInstance()->getSpSession());
+    m_spInboxList = m_dll->sp_session_inbox_create(Session::getInstance()->getSpSession());
 
-    for (int i = 0; i < sp_playlistcontainer_num_playlists(m_spContainer); i++) {
-      sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), sp_playlistcontainer_playlist(m_spContainer, i), true);
+    for (int i = 0; i < m_dll->sp_playlistcontainer_num_playlists(m_spContainer); i++) {
+      m_dll->sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), m_dll->sp_playlistcontainer_playlist(m_spContainer, i), true);
     }
 
-    sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), m_spInboxList , true);
-    sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), m_spStarredList, true);
+    m_dll->sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), m_spInboxList , true);
+    m_dll->sp_playlist_set_in_ram(Session::getInstance()->getSpSession(), m_spStarredList, true);
 
     m_pcCallbacks.playlist_added = &pc_playlist_added;
     m_pcCallbacks.playlist_removed = &pc_playlist_removed;
     m_pcCallbacks.container_loaded = &pc_loaded;
     m_pcCallbacks.playlist_moved = &pc_playlist_moved;
 
-    sp_playlistcontainer_add_callbacks(m_spContainer, &m_pcCallbacks, this);
+    m_dll->sp_playlistcontainer_add_callbacks(m_spContainer, &m_pcCallbacks, this);
   }
 
   PlaylistStore::~PlaylistStore() {
-    sp_playlistcontainer_remove_callbacks(m_spContainer, &m_pcCallbacks, this);
+    m_dll->sp_playlistcontainer_remove_callbacks(m_spContainer, &m_pcCallbacks, this);
     Logger::printOut("delete PlaylistStore");
     while (!m_playlists.empty()) {
       delete m_playlists.back();
@@ -71,6 +75,7 @@ namespace addon_music_spotify {
     m_starredList = NULL;
 
     Logger::printOut("delete PlaylistStore done");
+    delete m_dll, m_dll = NULL;
   }
 
   bool PlaylistStore::isLoaded() {
@@ -104,6 +109,9 @@ namespace addon_music_spotify {
   }
 
   void PlaylistStore::pc_loaded(sp_playlistcontainer *pc, void *userdata) {
+      DllLibspotify *m_dll = new DllLibspotify();
+      m_dll->Load();
+
     Logger::printOut("pc loaded");
     PlaylistStore *store = (PlaylistStore*) userdata;
 
@@ -114,10 +122,10 @@ namespace addon_music_spotify {
     playlistNumber++;
 
 
-    for (int i = 0; i < sp_playlistcontainer_num_playlists(store->getContainer()); i++) {
-      sp_playlist_type spType = sp_playlistcontainer_playlist_type(store->m_spContainer, i);
+    for (int i = 0; i < m_dll->sp_playlistcontainer_num_playlists(store->getContainer()); i++) {
+      sp_playlist_type spType = m_dll->sp_playlistcontainer_playlist_type(store->m_spContainer, i);
       if (spType == SP_PLAYLIST_TYPE_PLAYLIST) {
-        newPlaylists.push_back(new SxPlaylist(sp_playlistcontainer_playlist(store->getContainer(), i), playlistNumber, false));
+        newPlaylists.push_back(new SxPlaylist(m_dll->sp_playlistcontainer_playlist(store->getContainer(), i), playlistNumber, false));
         playlistNumber++;
       }
     }
@@ -142,6 +150,7 @@ namespace addon_music_spotify {
     store->m_isLoaded = true;
     Utils::updateToplistMenu();
 
+    delete m_dll, m_dll = NULL;
   }
 
   void PlaylistStore::pc_playlist_added(sp_playlistcontainer *pc, sp_playlist *playlist, int position, void *userdata) {

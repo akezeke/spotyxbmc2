@@ -41,6 +41,9 @@ namespace addon_music_spotify {
     void OnException(); // signal termination handler
     void Process();
     Search* m_search;
+
+  protected:
+    DllLibspotify *m_dll;
   };
 
 } /* namespace addon_music_spotify */

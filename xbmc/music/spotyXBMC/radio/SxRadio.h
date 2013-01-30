@@ -22,7 +22,7 @@
 #ifndef SXRADIO_H_
 #define SXRADIO_H_
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include "../track/TrackContainer.h"
 #include <vector>
 

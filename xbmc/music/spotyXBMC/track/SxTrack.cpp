@@ -31,21 +31,24 @@
 namespace addon_music_spotify {
 
   SxTrack::SxTrack(sp_track *spTrack) {
+      m_dll = new DllLibspotify();
+    m_dll->Load();
+
 //  Logger::printOut("creating track");
 //  Logger::printOut(sp_track_name(spSxTrack));
-    while (!sp_track_is_loaded(spTrack))
+    while (!m_dll->sp_track_is_loaded(spTrack))
       ;
 
     //Logger::printOut("creating track loaded");
 
     m_references = 1;
     m_spTrack = spTrack;
-    m_name = sp_track_name(spTrack);
+    m_name = m_dll->sp_track_name(spTrack);
 
-    m_rating = ceil((float)sp_track_popularity(spTrack) / 10);
+    m_rating = ceil((float)m_dll->sp_track_popularity(spTrack) / 10);
 
-    m_duration = 0.001 * sp_track_duration(spTrack);
-    m_trackNumber = sp_track_index(spTrack);
+    m_duration = 0.001 * m_dll->sp_track_duration(spTrack);
+    m_trackNumber = m_dll->sp_track_index(spTrack);
 
     m_albumName = "";
     m_albumArtistName = "";
@@ -54,9 +57,9 @@ namespace addon_music_spotify {
     m_hasTHumb = false;
 
     //load the album and release it when we have harvested all data we need
-    sp_album * album = sp_track_album(spTrack);
-    if (sp_album_is_loaded(album)) {
-      SxAlbum* sAlbum = AlbumStore::getInstance()->getAlbum(sp_track_album(spTrack), false);
+    sp_album * album = m_dll->sp_track_album(spTrack);
+    if (m_dll->sp_album_is_loaded(album)) {
+      SxAlbum* sAlbum = AlbumStore::getInstance()->getAlbum(m_dll->sp_track_album(spTrack), false);
       m_thumb = sAlbum->getThumb();
       m_albumName = sAlbum->getAlbumName();
       m_albumArtistName = sAlbum->getAlbumArtistName();
@@ -72,20 +75,21 @@ namespace addon_music_spotify {
     } else
       Logger::printOut("no album loaded for track");
 
-    m_artistName = sp_artist_name(sp_track_artist(spTrack, 0));
-    m_fanart = ThumbStore::getInstance()->getFanart(sp_artist_name(sp_track_artist(spTrack, 0)));
+    m_artistName = m_dll->sp_artist_name(m_dll->sp_track_artist(spTrack, 0));
+    m_fanart = ThumbStore::getInstance()->getFanart(m_dll->sp_artist_name(m_dll->sp_track_artist(spTrack, 0)));
 
-    sp_link *link = sp_link_create_from_track(spTrack, 0);
+    sp_link *link = m_dll->sp_link_create_from_track(spTrack, 0);
     m_uri = new char[256];
-    sp_link_as_string(link, m_uri, 256);
-    sp_link_release(link);
+    m_dll->sp_link_as_string(link, m_uri, 256);
+    m_dll->sp_link_release(link);
 
   }
 
   SxTrack::~SxTrack() {
     if (m_thumb) ThumbStore::getInstance()->removeThumb(m_thumb);
     delete m_uri;
-    sp_track_release(m_spTrack);
+    m_dll->sp_track_release(m_spTrack);
+    delete m_dll, m_dll = NULL;
   }
 
   bool SxTrack::isLoaded() {

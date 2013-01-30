@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <vector>
 #include <string>
 #include "../album/AlbumContainer.h"
@@ -77,7 +77,7 @@ namespace addon_music_spotify {
 		bool isArtistsLoaded();
 
 		const char* getArtistName() {
-			return sp_artist_name(m_spArtist);
+            return m_dll->sp_artist_name(m_spArtist);
 		}
 
 		SxThumb* getThumb() {
@@ -155,6 +155,9 @@ namespace addon_music_spotify {
 		CStdString *m_fanart;
 
 		bool m_hasThumb;
+
+    protected:
+        DllLibspotify *m_dll;
 	};
 
 } /* namespace addon_music_spotify */

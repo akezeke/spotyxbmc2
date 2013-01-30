@@ -30,7 +30,7 @@
 #endif
 #endif
 
-#include <libspotify/api.h>
+#include "../DllLibspotify.h"
 #include <vector>
 #include "../../../threads/SystemClock.h"
 #include "../track/TrackStore.h"
