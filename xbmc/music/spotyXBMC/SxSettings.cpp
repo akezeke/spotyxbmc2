@@ -167,4 +167,34 @@ namespace addon_music_spotify {
 
     return (sp_radio_genre) mask;
   }
+
+  size_t Settings::getAppKey(uint8_t *appkey[]) {
+    char *path = NULL;
+    FILE *f = NULL;
+    char buf[3];
+    uint8_t tmp[512];
+    int i = 0;
+
+    strcpy (path, CSpecialProtocol::TranslatePath("special://profile/appkey.h").c_str());
+
+    f = fopen(path, "r");
+    if(f == NULL)
+      return 0;
+
+    while (!feof(f)) {
+      if(fgetc(f) == '0' && fgetc(f) == 'x') {
+        if(fgets(buf, 3, f) == NULL)
+		return 0;
+
+        tmp[i++] = strtol(buf, NULL, 16);
+      }
+    }
+
+    fclose(f);
+
+    *appkey = (uint8_t*) realloc(*appkey, i);
+    memcpy(*appkey, tmp, i);
+
+    return i;
+  }
 } /* namespace addon_music_spotify */

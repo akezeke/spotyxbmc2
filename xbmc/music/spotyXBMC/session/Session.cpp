@@ -20,7 +20,6 @@
  */
 
 #include "Session.h"
-#include "../../../../appkey.h"
 #include <string>
 
 #include "../player/PlayerHandler.h"
@@ -86,8 +85,7 @@ namespace addon_music_spotify {
       config.settings_location = cstr;
       config.tracefile = NULL;
 
-      config.application_key = g_appkey;
-      config.application_key_size = g_appkey_size;
+      config.application_key_size = Settings::getInstance()->getAppKey((uint8_t**) &config.application_key);
       config.user_agent = "spotyXBMC2";
       config.device_id = "XBMC htpc";
 
