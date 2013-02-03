@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="webinterface.default"
+<<<<<<< HEAD
+  version="2.1.4"
+=======
   version="2.1.5"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   name="Default"
   provider-name="Team XBMC">
   <requires>

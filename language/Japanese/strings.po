@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -4626,10 +4630,13 @@ msgctxt "#13432"
 msgid "Allow hardware acceleration (VideoToolbox)"
 msgstr "ハードウェア アクセラレータを許可 (VideoToolbox)"
 
+<<<<<<< HEAD
+=======
 msgctxt "#13433"
 msgid "Play the next video automatically"
 msgstr "次のビデオを自動で再生する"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#13434"
 msgid "Play only this"
 msgstr "これだけを再生"
@@ -6326,10 +6333,13 @@ msgctxt "#19166"
 msgid "PVR information"
 msgstr "PVR 情報"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19171"
 msgid "Start playback minimized"
 msgstr "最小化で再生開始"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19177"
 msgid "Playback"
 msgstr "再生"
@@ -6374,10 +6384,13 @@ msgctxt "#19189"
 msgid "Continue last channel on startup"
 msgstr "起動時に前回のチャンネルを使う"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19190"
 msgid "Minimized"
 msgstr "最小化"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19191"
 msgid "PVR service"
 msgstr "PVR サービス"
@@ -6430,18 +6443,24 @@ msgctxt "#19205"
 msgid "Group management"
 msgstr "グループ管理"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19206"
 msgid "Activate EPG:"
 msgstr "EPG を有効に:"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19207"
 msgid "Group:"
 msgstr "グループ："
 
+<<<<<<< HEAD
+=======
 msgctxt "#19209"
 msgid "XBMC virtual backend"
 msgstr "XBMC 仮想バックエンド"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19210"
 msgid "Client"
 msgstr "クライアント"
@@ -6494,10 +6513,13 @@ msgctxt "#19228"
 msgid "Recording deleted"
 msgstr "録画が削除されました"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19232"
 msgid "Clear search results"
 msgstr "検索結果をクリア"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19235"
 msgid "PVR manager is starting up"
 msgstr "PVR マネージャーを起動中"
@@ -6670,6 +6692,8 @@ msgctxt "#19508"
 msgid "Adult Movie/Drama"
 msgstr "アダルト映画・ドラマ"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19516"
 msgid "News/Current Affairs"
 msgstr "ニュース/時事"
@@ -6682,10 +6706,13 @@ msgctxt "#19518"
 msgid "News Magazine"
 msgstr "ニュース雑誌"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19519"
 msgid "Documentary"
 msgstr "ドキュメンタリー"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19520"
 msgid "Discussion/Interview/Debate"
 msgstr "議論/インタビュー/討論"
@@ -6698,6 +6725,7 @@ msgctxt "#19533"
 msgid "Game Show/Quiz/Contest"
 msgstr "ゲームショー/クイズ/コンテスト"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19534"
 msgid "Variety Show"
 msgstr "バラエティショー"
@@ -10326,10 +10354,13 @@ msgctxt "#36037"
 msgid "TV"
 msgstr "TV"
 
+<<<<<<< HEAD
+=======
 msgctxt "#36038"
 msgid "Amplifier / AVR device"
 msgstr "アンプ/AVレシーバーデバイス"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#36040"
 msgid "Unsupported libCEC interface version. %x is lower than the version XBMC supports (%x)"
 msgstr "サポートされていないバージョンの libCEC です。%x は、XBMC がサポートするバージョン (%x) より低くなっています。"

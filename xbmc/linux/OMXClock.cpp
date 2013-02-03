@@ -736,7 +736,11 @@ double OMXClock::OMXMediaTime(bool fixPreroll /* true */ , bool lock /* = true *
 
   pts = FromOMXTime(timeStamp.nTimestamp);
 
+<<<<<<< HEAD
+  if(pts != 0.0f && fixPreroll)
+=======
   if(fixPreroll)
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     pts += (OMX_PRE_ROLL * 1000);
 
   if(lock)

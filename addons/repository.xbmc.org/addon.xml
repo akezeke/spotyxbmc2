@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="repository.xbmc.org"
 		name="XBMC.org Add-ons"
+<<<<<<< HEAD
+		version="2.0.5"
+=======
 		version="2.0.6"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 		provider-name="Team XBMC">
   <requires>
     <import addon="xbmc.addon" version="12.0.0"/>

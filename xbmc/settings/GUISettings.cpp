@@ -1461,6 +1461,8 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
     updated = true;
   }
 
+<<<<<<< HEAD
+=======
   // replace broken last.fm musicvideo scraper with theaudiodb.com if it's still in use
   if (GetString("scrapers.musicvideosdefault") == "metadata.musicvideos.last.fm")
   {
@@ -1468,6 +1470,7 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
     updated = true;
   }
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   if (updated)
     g_settings.Save();
 }

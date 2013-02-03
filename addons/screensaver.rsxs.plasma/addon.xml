@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="screensaver.rsxs.plasma"
+<<<<<<< HEAD
+  version="1.0.1"
+=======
   version="1.0.2"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   name="Plasma"
   provider-name="mogumbo, Team XBMC">
   <requires>

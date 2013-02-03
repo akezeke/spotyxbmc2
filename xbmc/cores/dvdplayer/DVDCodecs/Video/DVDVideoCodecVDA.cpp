@@ -804,7 +804,10 @@ bool CDVDVideoCodecVDA::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
     }
  
     m_use_cvBufferRef = true;
+<<<<<<< HEAD
+=======
 #if 0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     //TODO fix after Frodo if (g_Windowing.GetRenderVendor().Find("Intel") > -1)
     {
       m_dllSwScale = new DllSwScale;
@@ -848,7 +851,10 @@ bool CDVDVideoCodecVDA::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 
       m_use_cvBufferRef = false;
     }
+<<<<<<< HEAD
+=======
 #endif
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
     // setup the decoder configuration dict
     CFMutableDictionaryRef decoderConfiguration = CFDictionaryCreateMutable(

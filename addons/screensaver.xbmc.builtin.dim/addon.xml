@@ -2,6 +2,7 @@
 <addon id="screensaver.xbmc.builtin.dim"
        name="Dim"
        version="1.0.2"
+       version="1.0.1"
        provider-name="Team XBMC">
   <extension point="xbmc.ui.screensaver" library=""/>
   <extension point="xbmc.addon.metadata">

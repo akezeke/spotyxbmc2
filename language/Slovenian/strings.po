@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -8896,7 +8900,11 @@ msgstr "Vključi drsnike"
 
 msgctxt "#21384"
 msgid "Make watched filtering a toggle in video library"
+<<<<<<< HEAD
+msgstr "Omogoči preklop filtriranja ogledanih vsebin v video knjižnici"
+=======
 msgstr "Izključi preklop filtriranja ogledanih vsebin v video knjižnici"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#21385"
 msgid "Open"
@@ -10584,7 +10592,11 @@ msgstr "Vključi podporo igralnim ploščkom in palicam"
 
 msgctxt "#35102"
 msgid "Disable joystick when device is present"
+<<<<<<< HEAD
+msgstr "Onemogoči igralno palico ob prisotnosti naprave"
+=======
 msgstr "Izključi igralno palico ob prisotnosti naprave"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#35500"
 msgid "Location"

@@ -42,8 +42,13 @@ private:
    \param label the label of the item for logging
    \param type [out] the type of art (poster/banner/thumb)
    */
+<<<<<<< HEAD
+  bool CacheTexture(const std::string &originalUrl, const std::string &cachedFile, const std::string &label, std::string &type);
+  bool CacheTexture(const std::string &originalUrl, const std::string &oldCachedFile, const std::string &label);
+=======
   bool CacheTexture(std::string &originalUrl, const std::string &cachedFile, const std::string &label, std::string &type);
   bool CacheTexture(std::string &originalUrl, const std::string &oldCachedFile, const std::string &label);
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
   CStdString GetCachedActorThumb(const CFileItem &item);
   CStdString GetCachedSeasonThumb(int season, const CStdString &path);

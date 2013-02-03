@@ -116,7 +116,10 @@ bool CPVRChannelGroupInternal::InsertInGroup(CPVRChannel &channel, int iChannelN
 bool CPVRChannelGroupInternal::Update(void)
 {
   CPVRChannelGroupInternal PVRChannels_tmp(m_bRadio);
+<<<<<<< HEAD
+=======
   PVRChannels_tmp.SetPreventSortAndRenumber();
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   return PVRChannels_tmp.LoadFromClients() && UpdateGroupEntries(PVRChannels_tmp);
 }
 

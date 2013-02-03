@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -6934,6 +6938,11 @@ msgctxt "#19278"
 msgid "Recording error"
 msgstr "錄影錯誤"
 
+<<<<<<< HEAD
+msgctxt "#19281"
+msgid "Confirm channel switches by pressing OK"
+msgstr "轉台時需要按OK確認"
+=======
 msgctxt "#19279"
 msgid "Client specific"
 msgstr "客戶端專用"
@@ -6945,6 +6954,7 @@ msgstr "客戶端專用設定"
 msgctxt "#19281"
 msgid "Confirm channel switches by pressing OK"
 msgstr "轉台時需要按「確定」確認"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#19499"
 msgid "Other/Unknown"
@@ -10530,10 +10540,13 @@ msgctxt "#35100"
 msgid "Enable joystick and gamepad support"
 msgstr "啟用搖桿和手把支援"
 
+<<<<<<< HEAD
+=======
 msgctxt "#35102"
 msgid "Disable joystick when device is present"
 msgstr "當有裝置時停用搖桿"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#35500"
 msgid "Location"
 msgstr "位置"
@@ -10650,10 +10663,13 @@ msgctxt "#36026"
 msgid "Put devices in standby mode when putting the PC in standby"
 msgstr "當電腦進入待機時讓裝置也待機"
 
+<<<<<<< HEAD
+=======
 msgctxt "#36027"
 msgid "This device needs servicing"
 msgstr "此裝置需要服務"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#36028"
 msgid "Ignore"
 msgstr "忽略"
@@ -10696,7 +10712,11 @@ msgstr "放大器/AVR 裝置"
 
 msgctxt "#36039"
 msgid "TV and AVR device (explicit)"
+<<<<<<< HEAD
+msgstr "電視和 AVR 裝置(外接式)"
+=======
 msgstr "電視和 AVR 裝置 (外接式)"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#36040"
 msgid "Unsupported libCEC interface version. %x is lower than the version XBMC supports (%x)"

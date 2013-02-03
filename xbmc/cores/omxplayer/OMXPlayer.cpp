@@ -1045,6 +1045,7 @@ void COMXPlayer::Process()
 
   // stop thumb jobs
   CJobManager::GetInstance().Pause(kJobTypeMediaFlags);
+<<<<<<< HEAD
 
   /*
   if (CJobManager::GetInstance().IsProcessing(kJobTypeMediaFlags) > 0)
@@ -1062,6 +1063,25 @@ void COMXPlayer::Process()
     // handle messages send to this thread, like seek or demuxer reset requests
     HandleMessages();
 
+=======
+
+  /*
+  if (CJobManager::GetInstance().IsProcessing(kJobTypeMediaFlags) > 0)
+  {
+    if (!WaitForPausedThumbJobs(20000))
+    {
+      CJobManager::GetInstance().UnPause(kJobTypeMediaFlags);
+      CLog::Log(LOGINFO, "COMXPlayer::Process:thumbgen jobs still running !!!");
+    }
+  }
+  */
+
+  while (!m_bAbortRequest)
+  {
+    // handle messages send to this thread, like seek or demuxer reset requests
+    HandleMessages();
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     if(m_bAbortRequest)
       break;
 
@@ -1091,6 +1111,7 @@ void COMXPlayer::Process()
       }
 
       OpenDefaultStreams();
+<<<<<<< HEAD
 
       if (CachePVRStream())
         SetCaching(CACHESTATE_PVR);
@@ -1131,6 +1152,48 @@ void COMXPlayer::Process()
     && (m_player_video.GetLevel() > 50 || m_CurrentVideo.id < 0))
       Sleep(0);
 
+=======
+
+      if (CachePVRStream())
+        SetCaching(CACHESTATE_PVR);
+
+      UpdateApplication(0);
+      UpdatePlayState(0);
+    }
+
+    // handle eventual seeks due to playspeed
+    HandlePlaySpeed();
+
+    // update player state
+    UpdatePlayState(200);
+
+    // update application with our state
+    UpdateApplication(1000);
+
+    // OMX emergency exit
+    if(HasAudio() && m_player_audio.BadState())
+    {
+      m_bAbortRequest = true;
+      break;
+    }
+
+    if (CheckDelayedChannelEntry())
+      continue;
+
+    // if the queues are full, no need to read more
+    if ((!m_player_audio.AcceptsData() && m_CurrentAudio.id >= 0)
+    ||  (!m_player_video.AcceptsData() && m_CurrentVideo.id >= 0))
+    {
+      Sleep(10);
+      continue;
+    }
+
+    // always yield to players if they have data levels > 50 percent
+    if((m_player_audio.GetLevel() > 50 || m_CurrentAudio.id < 0)
+    && (m_player_video.GetLevel() > 50 || m_CurrentVideo.id < 0))
+      Sleep(0);
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     DemuxPacket* pPacket = NULL;
     CDemuxStream *pStream = NULL;
     ReadPacket(pPacket, pStream);
@@ -1233,6 +1296,7 @@ void COMXPlayer::Process()
 
       // wait for omx components to finish
       if(bOmxWaitVideo && !m_player_video.IsEOS())
+<<<<<<< HEAD
       {
         Sleep(100);
         continue;
@@ -1241,6 +1305,16 @@ void COMXPlayer::Process()
       {
         Sleep(100);
         continue;
+=======
+      {
+        Sleep(100);
+        continue;
+      }
+      if(bOmxWaitAudio && !m_player_audio.IsEOS())
+      {
+        Sleep(100);
+        continue;
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
       }
 
       if (!m_pInputStream->IsEOF())
@@ -1254,6 +1328,18 @@ void COMXPlayer::Process()
     if (!IsValidStream(m_CurrentVideo)    && m_player_video.IsStalled())    CloseVideoStream(true);
     if (!IsValidStream(m_CurrentSubtitle) && m_player_subtitle.IsStalled()) CloseSubtitleStream(true);
     if (!IsValidStream(m_CurrentTeletext))                                  CloseTeletextStream(true);
+<<<<<<< HEAD
+
+    // see if we can find something better to play
+    if (IsBetterStream(m_CurrentAudio,    pStream)) OpenAudioStream   (pStream->iId, pStream->source);
+    if (IsBetterStream(m_CurrentVideo,    pStream)) OpenVideoStream   (pStream->iId, pStream->source);
+    if (IsBetterStream(m_CurrentSubtitle, pStream)) OpenSubtitleStream(pStream->iId, pStream->source);
+    if (IsBetterStream(m_CurrentTeletext, pStream)) OpenTeletextStream(pStream->iId, pStream->source);
+
+    if(m_change_volume)
+    {
+      m_player_audio.SetCurrentVolume(m_current_volume);
+=======
 
     // see if we can find something better to play
     if (IsBetterStream(m_CurrentAudio,    pStream)) OpenAudioStream   (pStream->iId, pStream->source);
@@ -1264,6 +1350,7 @@ void COMXPlayer::Process()
     if(m_change_volume)
     {
       m_player_audio.SetCurrentVolume(m_current_mute ? VOLUME_MINIMUM : m_current_volume);
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
       m_change_volume = false;
     }
 

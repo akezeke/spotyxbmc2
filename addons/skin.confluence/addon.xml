@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="skin.confluence"
+<<<<<<< HEAD
+  version="2.1.2"
+=======
   version="2.1.3"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   name="Confluence"
   provider-name="Jezz_X, Team XBMC">
   <requires>

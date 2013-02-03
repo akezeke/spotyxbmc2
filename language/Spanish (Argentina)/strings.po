@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -10036,7 +10040,11 @@ msgstr "Roto"
 
 msgctxt "#24099"
 msgid "Would you like to switch to this skin?"
+<<<<<<< HEAD
+msgstr "¿Desea cambiar a este skin?"
+=======
 msgstr "¿Deseas cambiar a este skin?"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#24100"
 msgid "To use this feature you must download an Add-on:"

@@ -4,9 +4,12 @@
 <!-- Report language file syntax bugs at: http://trac.xbmc.org/ -->
 
 <strings>
+<<<<<<< HEAD
+=======
     <string id="30000">使用 DVD 順序</string>
     <string id="30001">使用原本的順序 (單季)</string>
     <string id="30002">啟用 Fanart</string>
     <string id="30003">下載海報</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <string id="30004">語言</string>
 </strings>

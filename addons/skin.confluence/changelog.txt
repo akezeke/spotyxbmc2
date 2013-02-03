@@ -1,7 +1,10 @@
+<<<<<<< HEAD
+=======
 [B]2.1.3[/B]
 
 - Updated language files from Transifex
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 [B]2.1.2[/B]
 
 - Updated language files from Transifex

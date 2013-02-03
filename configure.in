@@ -2,7 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
+<<<<<<< HEAD
+AC_INIT([xbmc], [12.0rc2], [http://trac.xbmc.org])
+=======
 AC_INIT([xbmc], [12.0], [http://trac.xbmc.org])
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 AC_CONFIG_HEADERS([xbmc/config.h])
 AH_TOP([#pragma once])
 m4_include([m4/ax_python_devel.m4])

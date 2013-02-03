@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -3266,6 +3270,8 @@ msgctxt "#1435"
 msgid "Sandstorm"
 msgstr "Hiekkamyrsky"
 
+<<<<<<< HEAD
+=======
 msgctxt "#1436"
 msgid "Blowing"
 msgstr "Kovaa tuulta"
@@ -3274,6 +3280,7 @@ msgctxt "#1437"
 msgid "Pellet"
 msgstr "Rakeita"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#1438"
 msgid "Small"
 msgstr "Pieni"
@@ -10574,10 +10581,13 @@ msgctxt "#35100"
 msgid "Enable joystick and gamepad support"
 msgstr "Aktivoi joystick- ja PAD-ohjaintuki"
 
+<<<<<<< HEAD
+=======
 msgctxt "#35102"
 msgid "Disable joystick when device is present"
 msgstr "Älä käytä peliohjainta, kun laite on liitetty"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#35500"
 msgid "Location"
 msgstr "Sijainti"

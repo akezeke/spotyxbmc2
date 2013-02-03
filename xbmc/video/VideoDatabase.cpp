@@ -3436,9 +3436,15 @@ CVideoInfoTag CVideoDatabase::GetDetailsForMusicVideo(const dbiplus::sql_record*
       m_pDS2->next();
     }
     m_pDS2->close();
+<<<<<<< HEAD
 
     details.m_strPictureURL.Parse();
 
+=======
+
+    details.m_strPictureURL.Parse();
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     // get streamdetails
     GetStreamDetails(details);
   }

@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="metadata.album.universal"
        name="Universal Album Scraper"
+<<<<<<< HEAD
+       version="1.6.2"
+=======
        version="1.6.4"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
        provider-name="Olympia, Team XBMC">
   <requires>
     <import addon="xbmc.metadata" version="1.0"/>
@@ -21,7 +25,11 @@
     <summary lang="bg">Универсален източник за информация за албуми</summary>
     <summary lang="ca">Arreplegador universal per àlbums</summary>
     <summary lang="cs">Univerzální zdroj získávání dat pro alba</summary>
+<<<<<<< HEAD
+    <summary lang="da">Universel scraper til albummer</summary>
+=======
     <summary lang="da">Universel Scraper til Albummer</summary>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <summary lang="de">Universeller Scraper für Alben</summary>
     <summary lang="el">Universal Scraper Άλμπουμ</summary>
     <summary lang="en">Universal Scraper for Albums</summary>
@@ -64,7 +72,11 @@
     <description lang="fi">Tämä tiedonhakija käyttää tietolähteinään seuraavia sivustoja:MusicBrainz, last.fm, allmusic.com ja amazon.de. Kuvat ja grafiikat haetaan seuraavilta sivustoilta: fanart.tv, last.fm ja allmusic.com. Voit määrittää tarkasti, miltä sivustoilta mitäkin tietoa haetaan.&#10;&#10;Ensimmäinen haku tehdään aina lähteestä MusicBrainz. Mikäli allmusic- ja/tai amazon.de-linkkejä ei ole lisätty MusicBrainz-sivustolle, haku ei onnistu (mutta puuttuvien linkkien lisääminen on helppoa).</description>
     <description lang="fr">Ce collecteur utilise les informations des sites suivant : MusicBrainz, last.fm, allmusic.com et amazon.de et télécharge les artwork depuis : fanart.tv, last.fm et allmusic.com. Vous pouvez spécifier quel site utiliser pour chaque information à employer.&#10;&#10;Le premier résultat est toujours en provenance de MusicBrainz. Dans le cas où allmusic et/ou amazon.de ne sont pas ajoutés sur le site MusicBrainz, les champs de allmusic.com et/ou amazon.de ne peuvent pas être traités (il est toutefois très simple d'ajouter ces liens manquants).</description>
     <description lang="gl">Este scraper obtén a información dende os seguintes sitios soportados: MusicBrainz, last.fm, allmusic.com e amazon.de, mentres que as ilustracións as obtén dende: fanart.tv, last.fm e allmusic.com. Pódese definir dende que sitios se obterá a información específica de cada campo.&#10;&#10;A busca inicial faise sempre en MusicBrainz. No caso de non estar engadidas as ligazón de allmusic e/ou amazon.de no sitio de MusicBrainz, os campos de allmusic.com e/ou amazon.de non se poderán obter (aínda que é moi doado de engadir as ligazóns).</description>
+<<<<<<< HEAD
+    <description lang="he">This scraper collects information from the following supported sites: MusicBrainz, last.fm, allmusic.com and amazon.de, while grabs artwork from: fanart.tv, last.fm and allmusic.com. It can be set field by field that from which site you want that specific information.&#10;&#10;The initial search is always done on MusicBrainz. In case allmusic and/or amazon.de links are not added on the MusicBrainz site, fields from allmusic.com and/or amazon.de cannot be fetched (very easy to add those missing links though).</description>
+=======
     <description lang="he">סקרייפר זה אוסף מידע מהתארים הנתמכים הבאים: TheAudioDb.com, MusicBrainz, last.fm, and allmusic.com, בעוד שמשיכת גרפיקה נעשית דרך: fanart.tv, htbackdrops.com, last.fm and allmusic.com. יש אפשרות להגדיר את זאת שדה אחר שדה מאיזה אתר ברצונך למשוך את המידע הספציפי.⏎ ⏎ החיפוש הפנימי נעשה תמיד דרך MusicBrainz. במקרה שקישור allmusic לא התווסף באתר MusicBrainz, השדות מאת allmusic.com אינן יכולות להימשך (למרות שזה מאוד קל להוסיף את הקישורים הריקים).</description>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <description lang="hu">A leolvasó szöveges infókat gyűjt a támogatott oldalakról: MusicBrainz, last.fm, allmusic.com and amazon.de, valamint képeket a : fanart.tv, last.fm and allmusic.com-ról. Beállítható hogy honnan, és milyen infót gyűjtsön. A keresés mindig a MusicBrainz-on folyik, de könnyen hozzáadhatjuk a hiányzó találatokat az allmusic.com, vagy az amazon.de-ről.</description>
     <description lang="it">Questo ricercatore prende informazioni dai seguenti siti: MusicBrainz, last.fm, allmusic.com e amazon.de, mentre prende grafica da: fanart.tv, last.fm e allmusic.com. Puoi impostare campo per campo cosa prendere e da dove.⏎ ⏎La ricerca iniziale viene sempre fatta su MusicBrainz. In caso i links a allmusic e/o amazon.de non sono stati messi su MusicBrainz, i campi da questi siti non possono essere recuperati (è molto facile aggiungere quei link, comunque).</description>
     <description lang="ja">このスクレーパーは、以下のサイトから情報を取得します：MusicBrainz, last.fm, allmusic.com, amazon.de。アートワークは以下のサイトから取得します：fanart.tv, last.fm, allmusic.com。各フィールドごとに、どの情報をどのサイトから取得するか、個別に指定することもできます。&#10;&#10;最初は MusicBrainz を使って検索が行われます。MusicBrainz サイトに allmusic や amazon.de のリンクが追加されていない場合は、allmusic.com / amazon.de からのフィールドは取得できません (リンクを追加するのは簡単ですが)。</description>

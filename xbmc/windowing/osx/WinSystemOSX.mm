@@ -1343,8 +1343,12 @@ bool CWinSystemOSX::IsObscured(void)
     if (CFStringCompare(ownerName, CFSTR("Shades"), 0)            == kCFCompareEqualTo ||
         CFStringCompare(ownerName, CFSTR("SmartSaver"), 0)        == kCFCompareEqualTo ||
         CFStringCompare(ownerName, CFSTR("Brightness Slider"), 0) == kCFCompareEqualTo ||
+<<<<<<< HEAD
+        CFStringCompare(ownerName, CFSTR("Displaperture"), 0)     == kCFCompareEqualTo)
+=======
         CFStringCompare(ownerName, CFSTR("Displaperture"), 0)     == kCFCompareEqualTo ||
         CFStringCompare(ownerName, CFSTR("Dreamweaver"), 0)       == kCFCompareEqualTo)
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
       continue;
 
     CFDictionaryRef rectDictionary = (CFDictionaryRef)CFDictionaryGetValue(windowDictionary, kCGWindowBounds);

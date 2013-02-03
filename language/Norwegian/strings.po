@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -5870,6 +5874,8 @@ msgctxt "#19008"
 msgid "Signal quality"
 msgstr "Signalkvalitet"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19009"
 msgid "SNR"
 msgstr "SNR"
@@ -5878,6 +5884,7 @@ msgctxt "#19010"
 msgid "BER"
 msgstr "BER"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19011"
 msgid "UNC"
 msgstr "UNC"
@@ -6486,10 +6493,13 @@ msgctxt "#19212"
 msgid "This list contains changes"
 msgstr "Denne listen inneholder endringer"
 
+<<<<<<< HEAD
+=======
 msgctxt "#19214"
 msgid "Enter a valid URL for the new channel"
 msgstr "Skriv inn gyldig URL for ny kanal"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#19216"
 msgid "All radio channels"
 msgstr "Alle radio-kanaler"
@@ -9236,7 +9246,11 @@ msgstr "Weather.com (standard)"
 
 msgctxt "#24029"
 msgid "Service for weather information"
+<<<<<<< HEAD
+msgstr "jenesten for vær informasjon"
+=======
 msgstr "Værtjeneste"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#24030"
 msgid "This Add-on can not be configured"

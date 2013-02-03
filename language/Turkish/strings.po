@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -2920,7 +2924,11 @@ msgstr "%i öğe alındı"
 
 msgctxt "#1042"
 msgid "Retrieved %i of %i items"
+<<<<<<< HEAD
+msgstr "%i / %i  öge alındı"
+=======
 msgstr "%i / %i öğe alındı"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#1043"
 msgid "Program Add-ons"
@@ -8408,7 +8416,11 @@ msgstr "Üretim kodu"
 
 msgctxt "#20369"
 msgid "Show plot for unwatched items"
+<<<<<<< HEAD
+msgstr "İzlenmemiş ögelerin içeriğini göster"
+=======
 msgstr "İzlenmemiş öğelerin içeriğini göster"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#20370"
 msgid "* Hidden to prevent spoilers *"

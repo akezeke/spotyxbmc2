@@ -7,6 +7,10 @@
     <string id="30000">Usar ordem do DVD</string>
     <string id="30001">Usar Ordem Absoluta (Temporada única)</string>
     <string id="30002">Activar Fanart</string>
+<<<<<<< HEAD
+    <string id="30003">Preferir pósters</string>
+=======
     <string id="30003">Preferir posters</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <string id="30004">Idioma</string>
 </strings>

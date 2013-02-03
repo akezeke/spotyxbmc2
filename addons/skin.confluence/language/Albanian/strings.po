@@ -1,7 +1,11 @@
 # XBMC Media Center language file
 # Addon Name: Confluence
 # Addon id: skin.confluence
+<<<<<<< HEAD
+# Addon version: 2.1.2
+=======
 # Addon version: 2.1.3
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 # Addon Provider: Jezz_X, Team XBMC
 msgid ""
 msgstr ""

@@ -575,6 +575,12 @@ bool CAddonInstallJob::OnPreInstall()
     // stop the pvr manager, so running pvr add-ons are stopped and closed
     PVR::CPVRManager::Get().Stop();
   }
+
+  if (m_addon->Type() == ADDON_PVRDLL)
+  {
+    // stop the pvr manager, so running pvr add-ons are stopped and closed
+    PVR::CPVRManager::Get().Stop();
+  }
   return false;
 }
 

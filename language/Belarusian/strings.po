@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -1876,7 +1880,11 @@ msgstr "Выдаліць крыніцу"
 
 msgctxt "#523"
 msgid "Switch media"
+<<<<<<< HEAD
+msgstr "Пераключыць медыі"
+=======
 msgstr "Пераключыць мэдыі"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#524"
 msgid "Select playlist"
@@ -4584,7 +4592,11 @@ msgstr "There are no settings available\nfor this visualization"
 
 msgctxt "#13391"
 msgid "Eject/Load"
+<<<<<<< HEAD
+msgstr "Прыняць / Узяць"
+=======
 msgstr "Высунуць / Узяць"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#13392"
 msgid "Use visualization if playing audio"
@@ -9796,7 +9808,11 @@ msgstr "Зьвесткі пра альбом"
 
 msgctxt "#24017"
 msgid "Artist information"
+<<<<<<< HEAD
+msgstr "Зьвесткі пра артыста"
+=======
 msgstr "Зьвесткі пра выканаўцу"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#24018"
 msgid "Services"
@@ -10582,10 +10598,13 @@ msgctxt "#35100"
 msgid "Enable joystick and gamepad support"
 msgstr "Дазволіць падтрымку джойсьціка і гэймпада"
 
+<<<<<<< HEAD
+=======
 msgctxt "#35102"
 msgid "Disable joystick when device is present"
 msgstr "Disable joystick when device is present"
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgctxt "#35500"
 msgid "Location"
 msgstr "Location"

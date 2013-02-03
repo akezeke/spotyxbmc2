@@ -1,9 +1,12 @@
+<<<<<<< HEAD
+=======
 [B]2.4.3[/B]
 Disable last.fm options because last.fm suspended XBMC's API account
 
 [B]2.4.2[/B]
 Updated language files from Transifex
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 [B]2.4.1[/B]
 Updated language files from Transifex
 

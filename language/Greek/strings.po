@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
+# XBMC-core v12.0-RC1
+=======
 # XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -10024,7 +10028,7 @@ msgstr "(ανεπιθύμητο)"
 
 msgctxt "#24096"
 msgid "Add-on has been marked as broken in repository."
-msgstr "Το πρόσθετο έχει επισημανθεί ως κατεστραμμένο στο αποθετήριο."
+msgstr "Το πρόσθετο έχει επισημανθεί ως προβληματικό στο αποθετήριο."
 
 msgctxt "#24097"
 msgid "Would you like to disable it on your system?"
@@ -10032,7 +10036,7 @@ msgstr "Επιθυμείτε να απενεργοποιηθεί από το σ�
 
 msgctxt "#24098"
 msgid "Broken"
-msgstr "Κατεστραμμένο"
+msgstr "Προβληματικό"
 
 msgctxt "#24099"
 msgid "Would you like to switch to this skin?"

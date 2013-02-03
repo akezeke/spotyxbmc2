@@ -1,7 +1,11 @@
 # XBMC Media Center language file
 # Addon Name: Confluence
 # Addon id: skin.confluence
+<<<<<<< HEAD
+# Addon version: 2.1.2
+=======
 # Addon version: 2.1.3
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 # Addon Provider: Jezz_X, Team XBMC
 msgid ""
 msgstr ""
@@ -79,7 +83,11 @@ msgstr "Fankunst"
 
 msgctxt "#31031"
 msgid "Pic Thumbs"
+<<<<<<< HEAD
+msgstr "Miniversioner af Billeder"
+=======
 msgstr "Blandet"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#31032"
 msgid "Image Wrap"
@@ -227,7 +235,11 @@ msgstr "Vis \"Spiller nu\" visualisering i baggrunden"
 
 msgctxt "#31126"
 msgid "Play TV theme songs in video library (TvTunes add-on)"
+<<<<<<< HEAD
+msgstr "Afspil temasange til TV-serier i videobiblioteket (TvTunes add-on)"
+=======
 msgstr "Afspil kendingsmelodier til TV-serier i videobiblioteket (TvTunes add-on)"
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 msgctxt "#31127"
 msgid "TvTunes"

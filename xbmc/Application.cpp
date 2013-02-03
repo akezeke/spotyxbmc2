@@ -20,7 +20,10 @@
 
 //spotify
 #include "music/spotyXBMC/Addon.music.spotify.h"
+<<<<<<< HEAD
+=======
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 #include "network/Network.h"
 #include "threads/SystemClock.h"
 #include "system.h"
@@ -1389,7 +1392,10 @@ bool CApplication::Initialize()
 
   //spotify
   g_spotify = new Addon_music_spotify();
+<<<<<<< HEAD
+=======
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   g_sysinfo.Refresh();
 
   CLog::Log(LOGINFO, "removing tempfiles");
@@ -5400,6 +5406,13 @@ void CApplication::SetHardwareVolume(float hardwareVolume)
     value = 1.0f;
 
   CAEFactory::SetVolume(value);
+<<<<<<< HEAD
+
+  /* for platforms where we do not have AE */
+  if (!CAEFactory::GetEngine() && m_pPlayer)
+    m_pPlayer->SetVolume(g_settings.m_fVolumeLevel);
+=======
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 }
 
 int CApplication::GetVolume() const
@@ -5906,4 +5919,3 @@ CPerformanceStats &CApplication::GetPerformanceStats()
   return m_perfStats;
 }
 #endif
-

@@ -180,12 +180,15 @@ bool CPVRManager::UpgradeOutdatedAddons(void)
   return false;
 }
 
+<<<<<<< HEAD
+=======
 bool CPVRManager::WaitUntilInitialised(void)
 {
   return m_initialisedEvent.Wait() &&
       IsStarted();
 }
 
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 void CPVRManager::Cleanup(void)
 {
   CSingleLock lock(m_critSection);
