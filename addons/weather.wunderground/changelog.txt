@@ -1,4 +1,15 @@
+<<<<<<< HEAD
 v1.0.7
+=======
+v1.0.9
+- updated language files from Transifex
+
+v1.0.8
+- language update
+
+v1.0.7
+- fixed failed to run when there's a special char in username
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 - switch to 2 day weekend forecast
 
 v1.0.6

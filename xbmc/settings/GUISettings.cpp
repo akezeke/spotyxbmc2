@@ -815,7 +815,7 @@ void CGUISettings::Initialize()
 
   AddDefaultAddon(NULL, "scrapers.moviesdefault", 21413, "metadata.themoviedb.org", ADDON_SCRAPER_MOVIES);
   AddDefaultAddon(NULL, "scrapers.tvshowsdefault", 21414, "metadata.tvdb.com", ADDON_SCRAPER_TVSHOWS);
-  AddDefaultAddon(NULL, "scrapers.musicvideosdefault", 21415, "metadata.musicvideos.last.fm", ADDON_SCRAPER_MUSICVIDEOS);
+  AddDefaultAddon(NULL, "scrapers.musicvideosdefault", 21415, "metadata.musicvideos.theaudiodb.com", ADDON_SCRAPER_MUSICVIDEOS);
 
   // service settings
   AddGroup(SETTINGS_SERVICE, 14036);
@@ -1461,6 +1461,16 @@ void CGUISettings::LoadXML(TiXmlElement *pRootElement, bool hideSettings /* = fa
     updated = true;
   }
 
+<<<<<<< HEAD
+=======
+  // replace broken last.fm musicvideo scraper with theaudiodb.com if it's still in use
+  if (GetString("scrapers.musicvideosdefault") == "metadata.musicvideos.last.fm")
+  {
+    SetString("scrapers.musicvideosdefault", "metadata.musicvideos.theaudiodb.com");
+    updated = true;
+  }
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   if (updated)
     g_settings.Save();
 }

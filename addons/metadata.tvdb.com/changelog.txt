@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+=======
+[B]1.4.5[/B]
+- Fixed: dvdorder setting won't apply in GetEpisodeDetails (thx and credits to scudlee)
+
+[B]1.4.4[/B]
+- Updated: language files from Transifex
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 [B]1.4.3[/B]
 - Updated: language files from Transifex
 

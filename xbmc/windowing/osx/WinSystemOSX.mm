@@ -1299,6 +1299,7 @@ bool CWinSystemOSX::IsObscured(void)
   // default to false before we start parsing though the windows.
   // if we are are obscured by any windows, then set true.
   m_obscured = false;
+  static bool obscureLogged = false;
 
   CGWindowListOption opts;
   opts = kCGWindowListOptionOnScreenAboveWindow | kCGWindowListExcludeDesktopElements;
@@ -1342,7 +1343,12 @@ bool CWinSystemOSX::IsObscured(void)
     if (CFStringCompare(ownerName, CFSTR("Shades"), 0)            == kCFCompareEqualTo ||
         CFStringCompare(ownerName, CFSTR("SmartSaver"), 0)        == kCFCompareEqualTo ||
         CFStringCompare(ownerName, CFSTR("Brightness Slider"), 0) == kCFCompareEqualTo ||
+<<<<<<< HEAD
         CFStringCompare(ownerName, CFSTR("Displaperture"), 0)     == kCFCompareEqualTo)
+=======
+        CFStringCompare(ownerName, CFSTR("Displaperture"), 0)     == kCFCompareEqualTo ||
+        CFStringCompare(ownerName, CFSTR("Dreamweaver"), 0)       == kCFCompareEqualTo)
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
       continue;
 
     CFDictionaryRef rectDictionary = (CFDictionaryRef)CFDictionaryGetValue(windowDictionary, kCGWindowBounds);
@@ -1355,6 +1361,12 @@ bool CWinSystemOSX::IsObscured(void)
       if (CGRectContainsRect(windowBounds, bounds))
       {
         // if the windowBounds completely encloses our bounds, we are obscured.
+        if (!obscureLogged)
+        {
+          const char* cstr = CFStringGetCStringPtr(ownerName, CFStringGetSystemEncoding());
+          CLog::Log(LOGDEBUG, "WinSystemOSX: Fullscreen window %s obscures XBMC!", cstr);
+          obscureLogged = true;
+        }
         m_obscured = true;
         break;
       }
@@ -1372,6 +1384,10 @@ bool CWinSystemOSX::IsObscured(void)
 
   if (!m_obscured)
   {
+    // if we are here we are not obscured by any fullscreen window - reset flag
+    // for allowing the logmessage above to show again if this changes.
+    if (obscureLogged)
+      obscureLogged = false;
     std::vector<CRect> rects = ourBounds.SubtractRects(partialOverlaps);
     // they got us covered
     if (rects.size() == 0)
@@ -1465,13 +1481,17 @@ void CWinSystemOSX::EnableSystemScreenSaver(bool bEnable)
 
   if (!bEnable)
   {
-    CFStringRef reasonForActivity= CFSTR("XBMC requested disable system screen saver");
-    IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
-      kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
+    if (assertionID == 0)
+    {
+      CFStringRef reasonForActivity= CFSTR("XBMC requested disable system screen saver");
+      IOPMAssertionCreateWithName(kIOPMAssertionTypeNoDisplaySleep,
+        kIOPMAssertionLevelOn, reasonForActivity, &assertionID);
+    }
   }
   else if (assertionID != 0)
   {
     IOPMAssertionRelease(assertionID);
+    assertionID = 0;
   }
 
   m_use_system_screensaver = bEnable;

@@ -6,7 +6,12 @@
 <strings>
     <string id="30000">Brug DVD rækkefølge</string>
     <string id="30001">Brug absolut rækkefølge (enkelt sæson)</string>
+<<<<<<< HEAD
     <string id="30002">Aktivér fankunst</string>
     <string id="30003">Foretræk plakater</string>
+=======
+    <string id="30002">Aktiver Fankunst</string>
+    <string id="30003">Foretræk Plakater</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <string id="30004">Sprog</string>
 </strings>

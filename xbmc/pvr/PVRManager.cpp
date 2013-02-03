@@ -180,6 +180,15 @@ bool CPVRManager::UpgradeOutdatedAddons(void)
   return false;
 }
 
+<<<<<<< HEAD
+=======
+bool CPVRManager::WaitUntilInitialised(void)
+{
+  return m_initialisedEvent.Wait() &&
+      IsStarted();
+}
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 void CPVRManager::Cleanup(void)
 {
   CSingleLock lock(m_critSection);
@@ -202,6 +211,7 @@ void CPVRManager::Cleanup(void)
     delete m_pendingUpdates.at(iJobPtr);
   m_pendingUpdates.clear();
 
+  m_initialisedEvent.Reset();
   SetState(ManagerStateStopped);
 }
 
@@ -264,6 +274,8 @@ void CPVRManager::Start(bool bAsync /* = false */, bool bOpenPVRWindow /* = fals
     m_database = new CPVRDatabase;
   m_database->Open();
 
+  g_EpgContainer.Start();
+
   /* create the supervisor thread to do all background activities */
   StartUpdateThreads();
 }
@@ -278,6 +290,7 @@ void CPVRManager::Stop(void)
   SetState(ManagerStateStopping);
 
   /* stop the EPG updater, since it might be using the pvr add-ons */
+  m_initialisedEvent.Set();
   g_EpgContainer.Stop();
 
   CLog::Log(LOGNOTICE, "PVRManager - stopping");
@@ -317,8 +330,6 @@ void CPVRManager::SetState(ManagerState state)
 
 void CPVRManager::Process(void)
 {
-  g_EpgContainer.Stop();
-
   /* load the pvr data from the db and clients if it's not already loaded */
   while (!Load() && GetState() == ManagerStateStarting)
   {
@@ -336,7 +347,7 @@ void CPVRManager::Process(void)
 
   /* main loop */
   CLog::Log(LOGDEBUG, "PVRManager - %s - entering main loop", __FUNCTION__);
-  g_EpgContainer.Start();
+  m_initialisedEvent.Set();
 
   if (m_bOpenPVRWindow)
   {
@@ -738,7 +749,7 @@ bool CPVRManager::StartRecordingOnPlayingChannel(bool bOnOff)
     else if (!bOnOff && channel->IsRecording())
     {
       /* delete active timers */
-      bReturn = m_timers->DeleteTimersOnChannel(*channel, false, true);
+      bReturn = m_timers->DeleteTimersOnChannel(*channel, true, true);
     }
   }
 
@@ -759,6 +770,9 @@ bool CPVRManager::CheckParentalLock(const CPVRChannel &channel)
 bool CPVRManager::IsParentalLocked(const CPVRChannel &channel)
 {
   bool bReturn(false);
+  CSingleLock lock(m_managerStateMutex);
+  if (!IsStarted())
+    return bReturn;
   CPVRChannelPtr currentChannel(new CPVRChannel(false));
 
   if (// different channel
@@ -862,13 +876,27 @@ bool CPVRManager::OpenLiveStream(const CFileItem &channel)
   if (IsParentalLocked(*channel.GetPVRChannelInfoTag()))
     return bReturn;
 
+  CPVRChannelPtr playingChannel;
+  bool bPersistChannel(false);
   if ((bReturn = m_addons->OpenStream(*channel.GetPVRChannelInfoTag(), false)) != false)
   {
     CSingleLock lock(m_critSection);
     if(m_currentFile)
       delete m_currentFile;
     m_currentFile = new CFileItem(channel);
+
+    if (m_addons->GetPlayingChannel(playingChannel))
+    {
+      /* store current time in iLastWatched */
+      time_t tNow;
+      CDateTime::GetCurrentDateTime().GetAsTime(tNow);
+      playingChannel->SetLastWatched(tNow);
+      bPersistChannel = true;
+    }
   }
+
+  if (bPersistChannel)
+    playingChannel->Persist();
 
   return bReturn;
 }

@@ -9,7 +9,11 @@
 	<key>CFBundleExecutable</key>
 	<string>XBMC</string>
 	<key>CFBundleGetInfoString</key>
+<<<<<<< HEAD
 	<string>12.0.rc2</string>
+=======
+	<string>12.0</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 	<key>CFBundleIconFile</key>
 	<string>xbmc.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -19,7 +23,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
+<<<<<<< HEAD
 	<string>12.0.rc2</string>
+=======
+	<string>12.0</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 	<key>CFBundleVersion</key>
 	<string>r####</string>
 	<key>CFBundleSignature</key>

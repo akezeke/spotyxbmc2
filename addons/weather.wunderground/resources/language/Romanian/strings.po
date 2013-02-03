@@ -1,7 +1,10 @@
 # XBMC Media Center language file
 # Addon Name: Weather Underground
 # Addon id: weather.wunderground
+<<<<<<< HEAD
 # Addon version: 1.0.6
+=======
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 # Addon Provider: Team XBMC
 msgid ""
 msgstr ""

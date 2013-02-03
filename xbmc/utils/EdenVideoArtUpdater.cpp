@@ -190,8 +190,14 @@ void CEdenVideoArtUpdater::Process()
       {
         std::string cachedSeason = GetCachedSeasonThumb(j->first, item->GetVideoInfoTag()->m_strPath);
         std::string type;
+<<<<<<< HEAD
         if (CacheTexture(j->second.begin()->second, cachedSeason, "", type))
           db.SetArtForItem(idSeason, "season", type, j->second.begin()->second);
+=======
+        std::string originalUrl = j->second.begin()->second;
+        if (CacheTexture(originalUrl, cachedSeason, "", type))
+          db.SetArtForItem(idSeason, "season", type, originalUrl);
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
       }
     }
 
@@ -278,13 +284,21 @@ void CEdenVideoArtUpdater::Process()
   items.Clear();
 }
 
+<<<<<<< HEAD
 bool CEdenVideoArtUpdater::CacheTexture(const std::string &originalUrl, const std::string &cachedFile, const std::string &label)
+=======
+bool CEdenVideoArtUpdater::CacheTexture(std::string &originalUrl, const std::string &cachedFile, const std::string &label)
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 {
   std::string type;
   return CacheTexture(originalUrl, cachedFile, label, type);
 }
 
+<<<<<<< HEAD
 bool CEdenVideoArtUpdater::CacheTexture(const std::string &originalUrl, const std::string &cachedFile, const std::string &label, std::string &type)
+=======
+bool CEdenVideoArtUpdater::CacheTexture(std::string &originalUrl, const std::string &cachedFile, const std::string &label, std::string &type)
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 {
   if (originalUrl.empty())
   {
@@ -296,6 +310,14 @@ bool CEdenVideoArtUpdater::CacheTexture(const std::string &originalUrl, const st
     CLog::Log(LOGERROR, "%s No cached art for item %s (should be %s)", __FUNCTION__, label.c_str(), cachedFile.c_str());
     return false;
   }
+<<<<<<< HEAD
+=======
+  if (originalUrl.empty())
+  {
+    originalUrl = GetThumb(cachedFile, "http://unknown/video/", true);
+    CLog::Log(LOGERROR, "%s No original url for item %s, but cached art exists, using %s", __FUNCTION__, label.c_str(), originalUrl.c_str());
+  }
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
   CTextureDetails details;
   details.updateable = false;

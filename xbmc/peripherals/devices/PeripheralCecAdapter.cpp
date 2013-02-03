@@ -132,6 +132,7 @@ void CPeripheralCecAdapter::ResetMembers(void)
   m_bStandbyPending          = false;
   m_bActiveSourceBeforeStandby = false;
   m_bOnPlayReceived          = false;
+  m_bPlaybackPaused          = false;
 
   m_currentButton.iButton    = 0;
   m_currentButton.iDuration  = 0;
@@ -215,6 +216,7 @@ void CPeripheralCecAdapter::Announce(AnnouncementFlag flag, const char *sender, 
       CSingleLock lock(m_critSection);
       bActivateSource = (m_configuration.bActivateSource &&
           !m_bOnPlayReceived &&
+          !m_cecAdapter->IsLibCECActiveSource() &&
           (!m_preventActivateSourceOnPlay.IsValid() || CDateTime::GetCurrentDateTime() - m_preventActivateSourceOnPlay > CDateTimeSpan(0, 0, 0, CEC_SUPPRESS_ACTIVATE_SOURCE_AFTER_ON_STOP)));
       m_bOnPlayReceived = true;
     }
@@ -251,7 +253,7 @@ bool CPeripheralCecAdapter::InitialiseFeature(const PeripheralFeature feature)
     {
       // display warning: libCEC could not be loaded
       CLog::Log(LOGERROR, "%s", g_localizeStrings.Get(36017).c_str());
-      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(36000), g_localizeStrings.Get(36029));
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(36000), g_localizeStrings.Get(36017));
       delete m_dll;
       m_dll = NULL;
       m_features.clear();
@@ -1198,17 +1200,23 @@ void CPeripheralCecAdapter::CecSourceActivated(void *cbParam, const CEC::cec_log
   {
     bool bShowingSlideshow = (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW);
     CGUIWindowSlideShow *pSlideShow = bShowingSlideshow ? (CGUIWindowSlideShow *)g_windowManager.GetWindow(WINDOW_SLIDESHOW) : NULL;
+    bool bPlayingAndDeactivated = activated == 0 && (
+        (pSlideShow && pSlideShow->IsPlaying()) || g_application.IsPlaying());
+    bool bPausedAndActivated = activated == 1 && adapter->m_bPlaybackPaused && (
+        (pSlideShow && pSlideShow->IsPaused()) || g_application.IsPaused());
+    if (bPlayingAndDeactivated)
+      adapter->m_bPlaybackPaused = true;
+    else if (bPausedAndActivated)
+      adapter->m_bPlaybackPaused = false;
 
-    if (pSlideShow)
+    if (bPlayingAndDeactivated || bPausedAndActivated)
     {
-      // pause/resume slideshow
-      pSlideShow->OnAction(CAction(ACTION_PAUSE));
-    }
-    else if ((g_application.IsPlaying() && activated == 0) ||
-             (g_application.IsPaused() && activated == 1))
-    {
-      // pause/resume player
-      CApplicationMessenger::Get().MediaPause();
+      if (pSlideShow)
+        // pause/resume slideshow
+        pSlideShow->OnAction(CAction(ACTION_PAUSE));
+      else
+        // pause/resume player
+        CApplicationMessenger::Get().MediaPause();
     }
   }
 }
@@ -1266,7 +1274,6 @@ void CPeripheralCecAdapter::SetConfigurationFromLibCEC(const CEC::libcec_configu
   // set the primary device type
   m_configuration.deviceTypes.Clear();
   m_configuration.deviceTypes.Add(config.deviceTypes[0]);
-  bChanged |= SetSetting("device_type", (int)config.deviceTypes[0]);
 
   // hide the "connected device" and "hdmi port number" settings when the PA was autodetected
   bool bPAAutoDetected(config.bAutodetectAddress == 1);

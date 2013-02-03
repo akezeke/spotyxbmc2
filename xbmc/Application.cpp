@@ -20,6 +20,10 @@
 
 //spotify
 #include "music/spotyXBMC/Addon.music.spotify.h"
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 #include "network/Network.h"
 #include "threads/SystemClock.h"
 #include "system.h"
@@ -1388,6 +1392,10 @@ bool CApplication::Initialize()
 
   //spotify
   g_spotify = new Addon_music_spotify();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
   g_sysinfo.Refresh();
 
   CLog::Log(LOGINFO, "removing tempfiles");
@@ -3332,6 +3340,10 @@ bool CApplication::Cleanup()
 {
   try
   {
+    //spotify
+    if (g_spotify)
+      g_spotify->enable(false);
+      //delete g_spotify;
     g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST);
     g_windowManager.Delete(WINDOW_MUSIC_PLAYLIST_EDITOR);
     g_windowManager.Delete(WINDOW_MUSIC_FILES);
@@ -4121,6 +4133,13 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
       SetPlaySpeed(iSpeed);
     }
 
+    // if player has volume control, set it.
+    if (m_pPlayer && m_pPlayer->ControlsVolume())
+    {
+       m_pPlayer->SetVolume(g_settings.m_fVolumeLevel);
+       m_pPlayer->SetMute(g_settings.m_bMute);
+    }
+
     if( IsPlayingAudio() )
     {
       if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
@@ -4496,8 +4515,9 @@ void CApplication::StopPlaying()
       m_pPlayer->CloseFile();
 
     // turn off visualisation window when stopping
-    if (iWin == WINDOW_VISUALISATION
+    if ((iWin == WINDOW_VISUALISATION
     ||  iWin == WINDOW_FULLSCREEN_VIDEO)
+    && !m_bStop)
       g_windowManager.PreviousWindow();
 
     g_partyModeManager.Disable();
@@ -5386,10 +5406,13 @@ void CApplication::SetHardwareVolume(float hardwareVolume)
     value = 1.0f;
 
   CAEFactory::SetVolume(value);
+<<<<<<< HEAD
 
   /* for platforms where we do not have AE */
   if (!CAEFactory::GetEngine() && m_pPlayer)
     m_pPlayer->SetVolume(g_settings.m_fVolumeLevel);
+=======
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 }
 
 int CApplication::GetVolume() const
@@ -5404,6 +5427,13 @@ void CApplication::VolumeChanged() const
   data["volume"] = GetVolume();
   data["muted"] = g_settings.m_bMute;
   CAnnouncementManager::Announce(Application, "xbmc", "OnVolumeChanged", data);
+
+  // if player has volume control, set it.
+  if (m_pPlayer && m_pPlayer->ControlsVolume())
+  {
+     m_pPlayer->SetVolume(g_settings.m_fVolumeLevel);
+     m_pPlayer->SetMute(g_settings.m_bMute);
+  }
 }
 
 int CApplication::GetSubtitleDelay() const
@@ -5440,13 +5470,19 @@ void CApplication::SetPlaySpeed(int iSpeed)
   m_iPlaySpeed = iSpeed;
 
   m_pPlayer->ToFFRW(m_iPlaySpeed);
-  if (m_iPlaySpeed == 1)
-  { // restore volume
-    m_pPlayer->SetVolume(VOLUME_MAXIMUM);
-  }
-  else
-  { // mute volume
-    m_pPlayer->SetVolume(VOLUME_MINIMUM);
+
+  // if player has volume control, set it.
+  if (m_pPlayer->ControlsVolume())
+  {
+    if (m_iPlaySpeed == 1)
+    { // restore volume
+      m_pPlayer->SetVolume(VOLUME_MAXIMUM);
+    }
+    else
+    { // mute volume
+      m_pPlayer->SetVolume(VOLUME_MINIMUM);
+    }
+    m_pPlayer->SetMute(g_settings.m_bMute);
   }
 }
 

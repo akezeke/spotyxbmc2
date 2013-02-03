@@ -1,5 +1,9 @@
 # XBMC Media Center language file
+<<<<<<< HEAD
 # XBMC-core v12.0-RC1
+=======
+# XBMC-core v12.0
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -276,19 +280,19 @@ msgstr "ΔΙΑΦ"
 
 msgctxt "#88"
 msgid "South"
-msgstr "Νότιος"
+msgstr "Νότια"
 
 msgctxt "#89"
 msgid "North"
-msgstr "Βόρειος"
+msgstr "Βόρεια"
 
 msgctxt "#90"
 msgid "West"
-msgstr "Δυτικός"
+msgstr "Δυτικά"
 
 msgctxt "#91"
 msgid "East"
-msgstr "Ανατολικός"
+msgstr "Ανατολικά"
 
 msgctxt "#92"
 msgid "Variable"
@@ -10172,7 +10176,7 @@ msgstr "Αύριο βράδυ"
 
 msgctxt "#33020"
 msgid "Condition"
-msgstr "Kατάσταση καιρού"
+msgstr "Συνθήκες"
 
 msgctxt "#33021"
 msgid "Precipitation"

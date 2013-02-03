@@ -4,5 +4,10 @@
 <!-- Report language file syntax bugs at: http://trac.xbmc.org/ -->
 
 <strings>
+<<<<<<< HEAD
+=======
+    <string id="30002">ファンアートを有効に</string>
+    <string id="30003">ポスターを使用</string>
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
     <string id="30004">言語</string>
 </strings>

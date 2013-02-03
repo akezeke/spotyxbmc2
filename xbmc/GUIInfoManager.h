@@ -504,7 +504,11 @@ namespace INFO
 
 #define VERSION_MAJOR 12
 #define VERSION_MINOR 0
+<<<<<<< HEAD
 #define VERSION_TAG "-RC2"
+=======
+#define VERSION_TAG ""
+>>>>>>> 0e538f99679fb861b317b34b22744eca7d429c5d
 
 #define LISTITEM_START              35000
 #define LISTITEM_THUMB              (LISTITEM_START)
