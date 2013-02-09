@@ -21,6 +21,7 @@
 
 #include "SxSettings.h"
 #include "URL.h"
+#include "Logger.h"
 
 namespace addon_music_spotify {
 
@@ -166,5 +167,45 @@ namespace addon_music_spotify {
       if (radiogenres[i].enable) mask |= radiogenres[i].id;
 
     return (sp_radio_genre) mask;
+  }
+
+  size_t Settings::getAppKey(void **appkey) {
+    char *path;
+    FILE *f;
+    size_t size;
+
+    path = new char [CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").size() + 1];
+    strcpy(path, CSpecialProtocol::TranslatePath("special://profile/spotify_appkey.key").c_str());
+
+    f = fopen(path, "r");
+    if (f == NULL) {
+      Logger::printOut("Failed to open spotify appkey file:");
+      Logger::printOut(path);
+      *appkey = NULL;
+      return 0;
+    }
+
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    *appkey = malloc(size + 1);
+    if (*appkey == NULL) {
+      Logger::printOut("Failed to allocate memory for appkey");
+      fclose(f);
+      return 0;
+    }
+
+    if (fread(*appkey, 1, size, f) != size) {
+      Logger::printOut("Failed to read spotify appkey file:");
+      Logger::printOut(path);
+      fclose(f);
+      *appkey = NULL;
+      return 0;
+    }
+
+    fclose(f);
+
+    return size;
   }
 } /* namespace addon_music_spotify */

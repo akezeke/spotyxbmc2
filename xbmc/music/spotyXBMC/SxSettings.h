@@ -43,6 +43,8 @@ namespace addon_music_spotify {
       return m_enabled;
     }
 
+    size_t getAppKey(void **appkey);
+
     CStdString getUserName() {
       return m_userName;
     }
