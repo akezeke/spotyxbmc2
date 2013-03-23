@@ -196,6 +196,13 @@ void CSoftAEStream::Initialize()
     m_ssrcData.data_out      = (float*)_aligned_malloc(m_format.m_frameSamples * (int)std::ceil(m_ssrcData.src_ratio) * sizeof(float), 16);
     m_ssrcData.output_frames = m_format.m_frames * (long)std::ceil(m_ssrcData.src_ratio);
     m_ssrcData.end_of_input  = 0;
+    // we must buffer the same amount as before but taking the source sample rate into account
+    // there is no reason to decrease the buffer for upsampling
+    if (m_internalRatio < 1)
+    {
+      m_waterLevel *= (1.0 / m_internalRatio);
+      m_refillBuffer = m_waterLevel;
+    }
   }
 
   m_limiter.SetSamplerate(AE.GetSampleRate());
@@ -485,7 +492,6 @@ double CSoftAEStream::GetDelay()
   double delay = AE.GetDelay();
   delay += (double)(m_inputBuffer.Used() / m_format.m_frameSize) / (double)m_format.m_sampleRate;
   delay += (double)m_framesBuffered                              / (double)AE.GetSampleRate();
-
   return delay;
 }
 
@@ -494,10 +500,9 @@ double CSoftAEStream::GetCacheTime()
   if (m_delete)
     return 0.0;
 
-  double time;
-  time  = (double)(m_inputBuffer.Used() / m_format.m_frameSize) / (double)m_format.m_sampleRate;
-  time += (double)(m_waterLevel - m_framesBuffered)             / (double)AE.GetSampleRate();
-  time += AE.GetCacheTime();
+  double time = AE.GetCacheTime();
+  time += (double)(m_inputBuffer.Used() / m_format.m_frameSize) / (double)m_format.m_sampleRate;
+  time += (double)m_framesBuffered                              / (double)AE.GetSampleRate();
   return time;
 }
 
@@ -506,10 +511,9 @@ double CSoftAEStream::GetCacheTotal()
   if (m_delete)
     return 0.0;
 
-  double total;
-  total  = (double)(m_inputBuffer.Size() / m_format.m_frameSize) / (double)m_format.m_sampleRate;
+  double total = AE.GetCacheTotal();
+  total += (double)(m_inputBuffer.Size() / m_format.m_frameSize) / (double)m_format.m_sampleRate;
   total += (double)m_waterLevel                                  / (double)AE.GetSampleRate();
-  total += AE.GetCacheTotal();
   return total;
 }
 

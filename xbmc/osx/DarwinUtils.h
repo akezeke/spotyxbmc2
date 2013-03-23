@@ -27,7 +27,8 @@ extern "C"
 {
 #endif
   bool        DarwinIsAppleTV2(void);
-  bool        DarwinIsIPad3(void);
+  bool        DarwinHasRetina(void);
+  const char *GetDarwinOSReleaseString(void);
   const char *GetDarwinVersionString(void);
   float       GetIOSVersion(void);
   int         GetDarwinFrameworkPath(bool forPython, char* path, uint32_t *pathsize);
