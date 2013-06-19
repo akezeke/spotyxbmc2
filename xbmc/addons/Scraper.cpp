@@ -490,7 +490,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl, const CStd
   CStdString sTitle, sTitleYear, sYear;
   CUtil::CleanString(sMovie, sTitle, sTitleYear, sYear, true/*fRemoveExt*/, fFirst);
 
-  if (!fFirst || Content() == CONTENT_MUSICVIDEOS)
+  if (!fFirst)
     sTitle.Replace("-"," ");
 
   CLog::Log(LOGDEBUG, "%s: Searching for '%s' using %s scraper "
@@ -781,14 +781,14 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl,
 // fetch list of episodes from URL (from video database)
 EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl &scurl)
 {
+  EPISODELIST vcep;
+  if (scurl.m_url.empty())
+    return vcep;
+  
   CLog::Log(LOGDEBUG, "%s: Searching '%s' using %s scraper "
     "(file: '%s', content: '%s', version: '%s')", __FUNCTION__,
     scurl.m_url[0].m_url.c_str(), Name().c_str(), Path().c_str(),
     ADDON::TranslateContent(Content()).c_str(), Version().c_str());
-
-  EPISODELIST vcep;
-  if (scurl.m_url.empty())
-    return vcep;
 
   vector<CStdString> vcsIn;
   vcsIn.push_back(scurl.m_url[0].m_url);

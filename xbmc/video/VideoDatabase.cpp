@@ -3098,6 +3098,25 @@ CVideoInfoTag CVideoDatabase::GetDetailsByTypeAndId(VIDEODB_CONTENT_TYPE type, i
   return details;
 }
 
+bool CVideoDatabase::GetStreamDetails(CFileItem& item)
+{
+  // Note that this function (possibly) creates VideoInfoTags for items that don't have one yet!
+  int fileId = -1;
+
+  if (item.HasVideoInfoTag())
+    fileId = item.GetVideoInfoTag()->m_iFileId;
+
+  if (fileId < 0)
+    fileId = GetFileId(item);
+
+  if (fileId < 0)
+    return false;
+
+  // Have a file id, get stream details if available (creates tag either way)
+  item.GetVideoInfoTag()->m_iFileId = fileId;
+  return GetStreamDetails(*item.GetVideoInfoTag());
+}
+
 bool CVideoDatabase::GetStreamDetails(CVideoInfoTag& tag) const
 {
   if (tag.m_iFileId < 0)
@@ -7214,17 +7233,12 @@ bool CVideoDatabase::GetRandomMusicVideo(CFileItem* item, int& idSong, const CSt
   {
     idSong = -1;
 
-    int iCount = GetMusicVideoCount(strWhere);
-    if (iCount <= 0)
-      return false;
-    int iRandom = rand() % iCount;
-
     if (NULL == m_pDB.get()) return false;
     if (NULL == m_pDS.get()) return false;
 
     // We don't use PrepareSQL here, as the WHERE clause is already formatted.
     CStdString strSQL;
-    strSQL.Format("select * from musicvideoview where %s order by idMVideo limit 1 offset %i",strWhere.c_str(),iRandom);
+    strSQL.Format("select * from musicvideoview where %s order by RANDOM() limit 1",strWhere.c_str());
     CLog::Log(LOGDEBUG, "%s query = %s", __FUNCTION__, strSQL.c_str());
     // run query
     if (!m_pDS->query(strSQL.c_str()))

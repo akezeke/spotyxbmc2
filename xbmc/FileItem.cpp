@@ -1179,16 +1179,6 @@ bool CFileItem::IsRemovable() const
   return IsOnDVD() || IsCDDA() || m_iDriveType == CMediaSource::SOURCE_TYPE_REMOVABLE;
 }
 
-bool CFileItem::IsSpotify() const
-{
-  if (URIUtils::GetExtension(m_strPath).Equals(".spotify", false))
-    return true;
-  CStdString extension = m_strPath.Right(m_strPath.GetLength() - m_strPath.Find('.') - 1);
-  if (extension.Left(12) == "spotifyradio")
-    return true;
-  return false;
-}
-
 bool CFileItem::IsReadOnly() const
 {
   if (IsParentFolder()) return true;
@@ -1731,7 +1721,7 @@ void CFileItemList::Assign(const CFileItemList& itemlist, bool append)
   m_cacheToDisc = itemlist.m_cacheToDisc;
 }
 
-bool CFileItemList::Copy(const CFileItemList& items)
+bool CFileItemList::Copy(const CFileItemList& items, bool copyItems /* = true */)
 {
   // assign all CFileItem parts
   *(CFileItem*)this = *(CFileItem*)&items;
@@ -1746,11 +1736,14 @@ bool CFileItemList::Copy(const CFileItemList& items)
   m_sortOrder      = items.m_sortOrder;
   m_sortIgnoreFolders = items.m_sortIgnoreFolders;
 
-  // make a copy of each item
-  for (int i = 0; i < items.Size(); i++)
+  if (copyItems)
   {
-    CFileItemPtr newItem(new CFileItem(*items[i]));
-    Add(newItem);
+    // make a copy of each item
+    for (int i = 0; i < items.Size(); i++)
+    {
+      CFileItemPtr newItem(new CFileItem(*items[i]));
+      Add(newItem);
+    }
   }
 
   return true;

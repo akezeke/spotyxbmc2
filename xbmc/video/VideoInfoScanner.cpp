@@ -86,7 +86,8 @@ namespace VIDEO
       {
         CGUIDialogExtendedProgressBar* dialog =
           (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
-        m_handle = dialog->GetHandle(g_localizeStrings.Get(314));
+        if (dialog)
+           m_handle = dialog->GetHandle(g_localizeStrings.Get(314));
       }
 
       m_bCanInterrupt = true;
@@ -1351,9 +1352,12 @@ namespace VIDEO
       if (result == CNfoFile::FULL_NFO)
       {
         m_nfoReader.GetDetails(*item.GetVideoInfoTag());
-        // override with episode and season number
-        item.GetVideoInfoTag()->m_iEpisode = file->iEpisode;
-        item.GetVideoInfoTag()->m_iSeason = file->iSeason;
+        // override with episode and season number from file if available
+        if (file->iEpisode > -1)
+        {
+          item.GetVideoInfoTag()->m_iEpisode = file->iEpisode;
+          item.GetVideoInfoTag()->m_iSeason = file->iSeason;
+        }
         if (AddVideo(&item, CONTENT_TVSHOWS, file->isFolder, true, &showInfo) < 0)
           return INFO_ERROR;
         continue;
