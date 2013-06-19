@@ -143,6 +143,8 @@ The spotify related code lives all in xbmc/music/spotyXBMC/ and can (fairly) eas
 
 Added files:
 
+* lib/libspotify/*
+
 * xbmc/music/spotyXBMC/Addon.music.spotify.cpp
 * xbmc/music/spotyXBMC/Addon.music.spotify.h
 * xbmc/music/spotyXBMC/Logger.cpp
