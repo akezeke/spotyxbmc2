@@ -115,7 +115,7 @@ Installation instructions for Ubuntu Linux 32/64
 6. Install all XBMC dependencies listed in the corresponding readme file.
    For ubuntu 11.04 run:
 
-`$ sudo apt-get install git-core make g++ gcc gawk pmount libtool nasm yasm automake cmake gperf zip unzip bison libltdl-dev libsdl-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev libfribidi-dev liblzo2-dev libfreetype6-dev libsqlite3-dev libogg-dev libasound2-dev python-sqlite libglew-dev libcurl3 libcurl4-gnutls-dev libxrandr-dev libxrender-dev libmad0-dev libogg-dev libvorbisenc2 libsmbclient-dev libmysqlclient-dev libpcre3-dev libdbus-1-dev libhal-dev libhal-storage-dev libjasper-dev libfontconfig-dev libbz2-dev libboost-dev libenca-dev libxt-dev libxmu-dev libpng-dev libjpeg-dev libpulse-dev mesa-utils libcdio-dev libsamplerate-dev libmpeg3-dev libflac-dev libiso9660-dev libass-dev libssl-dev fp-compiler gdc libmpeg2-4-dev libmicrohttpd-dev libmodplug-dev libssh-dev gettext cvs python-dev libyajl-dev libboost-thread-dev libplist-dev libusb-dev libudev-dev autopoint`
+`$ sudo apt-get install git-core make g++ gcc gawk pmount libtool nasm yasm automake cmake gperf zip unzip bison libltdl-dev libsdl-dev libsdl-image1.2-dev libsdl-gfx1.2-dev libsdl-mixer1.2-dev libfribidi-dev liblzo2-dev libfreetype6-dev libsqlite3-dev libogg-dev libasound2-dev python-sqlite libglew-dev libcurl3 libcurl4-gnutls-dev libxrandr-dev libxrender-dev libmad0-dev libogg-dev libvorbisenc2 libsmbclient-dev libmysqlclient-dev libpcre3-dev libdbus-1-dev libhal-dev libhal-storage-dev libjasper-dev libfontconfig-dev libbz2-dev libboost-dev libenca-dev libxt-dev libxmu-dev libpng-dev libjpeg-dev libpulse-dev mesa-utils libcdio-dev libsamplerate-dev libmpeg3-dev libflac-dev libiso9660-dev libass-dev libssl-dev fp-compiler gdc libmpeg2-4-dev libmicrohttpd-dev libmodplug-dev libssh-dev gettext cvs python-dev libyajl-dev libboost-thread-dev libplist-dev libusb-dev libudev-dev autopoint default-jre swig`
 
 
 7. Configure, make and install xbmc
@@ -217,17 +217,19 @@ Modified files:
 
 * xbmc/cores/paplayer/CodecFactory.cpp
 * xbmc/filesystem/MusicSearchDirectory.cpp
-* xbmc/MusicDatabaseDirectory/DirectoryNodeAlbum.cpp
-* xbmc/MusicDatabaseDirectory/DirectoryNodeArtist.cpp
-* xbmc/MusicDatabaseDirectory/DirectoryNodeOverview.cpp
-* xbmc/MusicDatabaseDirectory/DirectoryNodeSong.cpp
-* xbmc/MusicDatabaseDirectory/DirectoryNodeTop100.cpp
+* xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeAlbum.cpp
+* xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeArtist.cpp
+* xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeOverview.cpp
+* xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeSong.cpp
+* xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeTop100.cpp
 * xbmc/music/windows/GUIWindowMusicBase.cpp
 * xbmc/music/Windows/GuiWindowMusicNav.cpp
 * xbmc/music/Makefile
+* xbmc/dialogs/GUIDialogContextMenu.h
 * xbmc/settings/Settings.cpp
 * xbmc/Application.cpp
 * xbmc/GUIInfoManager.cpp
+* configure.in
 
 Buy me a beer?
 -------------

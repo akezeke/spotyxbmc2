@@ -120,6 +120,8 @@ public:
   virtual OSStatus  Render(AudioUnitRenderActionFlags* actionFlags,
     const AudioTimeStamp* pTimeStamp, UInt32 busNumber,
     UInt32 frameCount, AudioBufferList* pBufList);
+    
+  void AudioDevicesChanged();
 
 
 private:
@@ -172,4 +174,6 @@ private:
   int               m_soundMode;
   bool              m_streamsPlaying;
   bool              m_isSuspended;
+  bool              m_softSuspend;
+  unsigned int      m_softSuspendTimer;
 };

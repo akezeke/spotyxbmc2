@@ -1,5 +1,4 @@
 # XBMC Media Center language file
-# XBMC-core v12.0
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -10268,7 +10267,7 @@ msgstr "Configurează"
 
 msgctxt "#33054"
 msgid "Seasons"
-msgstr "Anotimpuri"
+msgstr "Sezoane"
 
 msgctxt "#33055"
 msgid "Use your"

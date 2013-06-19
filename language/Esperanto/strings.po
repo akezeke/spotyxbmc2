@@ -1,5 +1,4 @@
 # XBMC Media Center language file
-# XBMC-core v12.0
 msgid ""
 msgstr ""
 "Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
@@ -2417,6 +2416,10 @@ msgstr "Kvieto"
 msgctxt "#1418"
 msgid "Thunderstorms"
 msgstr "Fulmotondro"
+
+msgctxt "#1439"
+msgid "and"
+msgstr "kaj"
 
 msgctxt "#1446"
 msgid "Unknown"
