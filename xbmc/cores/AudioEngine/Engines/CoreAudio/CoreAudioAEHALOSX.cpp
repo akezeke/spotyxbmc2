@@ -45,7 +45,8 @@ CCoreAudioAEHALOSX::CCoreAudioAEHALOSX() :
   m_encoded           (false  ),
   m_initVolume        (1.0f   ),
   m_NumLatencyFrames  (0      ),
-  m_OutputBufferIndex (0      )
+  m_OutputBufferIndex (0      ),
+  m_ae                (NULL   )
 {
   m_AudioDevice   = new CCoreAudioDevice();
   m_OutputStream  = new CCoreAudioStream();
@@ -396,8 +397,7 @@ void CCoreAudioAEHALOSX::EnumerateOutputDevices(AEDeviceList &devices, bool pass
   CoreAudioDeviceList deviceList;
   CCoreAudioHardware::GetOutputDevices(&deviceList);
 
-  std::string defaultDeviceName;
-  CCoreAudioHardware::GetOutputDeviceName(defaultDeviceName);
+  devices.push_back(AEDevice("Default", "CoreAudio:default"));
 
   std::string deviceName;
   for (int i = 0; !deviceList.empty(); i++)

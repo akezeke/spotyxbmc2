@@ -489,4 +489,7 @@ protected:
   } m_EdlAutoSkipMarkers;
 
   CPlayerOptions m_PlayerOptions;
+
+  bool m_HasVideo;
+  bool m_HasAudio;
 };
