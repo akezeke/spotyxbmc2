@@ -67,7 +67,7 @@ Installation instructions for Microsoft Windows
    Use your favorite git tool to clone the repo: `git://github.com/akezeke/spotyxbmc2.git`
 
 2. Spotify API key
-   Get your own spotify API key from http://developer.spotify.com/en/libspotify/application-key/
+   Get your own spotify API key from https://developer.spotify.com/technologies/libspotify/#application-keys
    Click on c-code and copy the content to a new file called appkey.h placed in the xbmc source root folder. (where this readme is located).
   
 3. Build
@@ -109,7 +109,7 @@ Installation instructions for Ubuntu Linux 32/64
    `$ cd xbmc`
 
 5. Spotify API key
-   Get your own spotify API key from http://developer.spotify.com/en/libspotify/application-key/
+   Get your own spotify API key from https://developer.spotify.com/technologies/libspotify/#application-keys
    Click on c-code and copy the content to a new file called appkey.h placed in the xbmc source root folder. (where this readme is located).
 
 6. Install all XBMC dependencies listed in the corresponding readme file.
