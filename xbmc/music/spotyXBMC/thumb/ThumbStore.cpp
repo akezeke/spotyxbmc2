@@ -149,7 +149,7 @@ namespace addon_music_spotify {
 			artistString.Replace(' ', '+');
 			CStdString urlString;
 			urlString.Format(
-					"http://htbackdrops.com/api/afb0f6cdbd412a7888005de34f86e4a5/searchXML?keywords=%s&default_operator=and&aid=1&fields=title,keywords,caption,mb_name,mb_alias&inc=keywords,caption,mb_name,mb_aliases&limit=1",
+					"http://htbackdrops.org/api/afb0f6cdbd412a7888005de34f86e4a5/searchXML?keywords=%s&default_operator=and&aid=1&fields=title,keywords,caption,mb_name,mb_alias&inc=keywords,caption,mb_name,mb_aliases&limit=1",
 					artistString);
 
 			CURL url(urlString);
@@ -180,7 +180,7 @@ namespace addon_music_spotify {
 
 						CStdString *fanartUrl = new CStdString();
 						fanartUrl->Format(
-								"http://htbackdrops.com/api/afb0f6cdbd412a7888005de34f86e4a5/download/%s/fullsize/%s",
+								"http://htbackdrops.org/api/afb0f6cdbd412a7888005de34f86e4a5/download/%s/fullsize/%s",
 								id, name);
 						//Logger::printOut("Adding online fanart");
 
